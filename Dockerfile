@@ -10,7 +10,7 @@ COPY requirements.txt /tmp/requirements.txt
 COPY . /app/cryptosite
 RUN mkdir -p /app/data/uploads/kyc
 
-WORKDIR /app/cryptosite/backend
+WORKDIR /app/cryptosite
 EXPOSE 8000
 
 CMD ["sh", "-c", "python -c "from app import init_db; init_db()" && exec gunicorn -c gunicorn.conf.py app:app"]
