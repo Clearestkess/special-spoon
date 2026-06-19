@@ -13,8 +13,8 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
-BASE_DIR = Path(__file__).resolve().parents[1]
-BACKEND_DIR = Path(__file__).resolve().parent
+BACKEND_DIR = Path(__file__).resolve().parent 
+BASE_DIR = BACKEND_DIR
 DEFAULT_SQLITE_PATH = BACKEND_DIR / "blockharbor.db"
 DEFAULT_UPLOAD_ROOT = BACKEND_DIR / "uploads" / "kyc"
 
