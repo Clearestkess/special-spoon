@@ -1,211 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BlockHarbor Markets — Crypto investing interface</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>CryptoFinanceMarkets — Invest Smart, Earn More</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+  <style>
+    .ticker-bar{background:rgba(0,212,255,.05);border-bottom:1px solid rgba(0,212,255,.1);padding:.4rem 0;overflow:hidden}
+    .ticker-track{display:flex;gap:2.5rem;width:max-content;animation:tickerScroll 30s linear infinite;white-space:nowrap}
+    .t-item{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--text-muted)}
+    .t-sym{font-weight:700;color:var(--text-primary)}.t-up{color:var(--green)}.t-dn{color:var(--red)}
+    @keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+    .lnav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:rgba(10,13,20,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+    .lnav-logo{font-size:1.35rem;font-weight:900;color:var(--text-primary)}.lnav-logo span{color:var(--accent)}
+    .lnav-links{display:flex;gap:1.75rem}.lnav-links a{color:var(--text-muted);font-size:.88rem;transition:color .2s}.lnav-links a:hover{color:var(--accent)}
+    .lnav-actions{display:flex;gap:.6rem}
+    @media(max-width:768px){.lnav-links{display:none}}
+    .hero{min-height:88vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:5rem 1.5rem;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(0,212,255,.08),rgba(124,58,237,.05) 40%,transparent 70%);pointer-events:none}
+    .hero-inner{position:relative;z-index:1;max-width:800px}
+    .hero-badge{display:inline-flex;align-items:center;gap:.4rem;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.22);border-radius:20px;padding:.3rem .9rem;font-size:.78rem;color:var(--accent);margin-bottom:1.5rem}
+    .hero-badge::before{content:'●';animation:blink 1.5s infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+    .hero h1{font-size:clamp(2rem,6vw,4rem);font-weight:900;line-height:1.08;color:var(--text-primary);margin-bottom:1.1rem}
+    .hero h1 span{background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .hero p{font-size:1.05rem;color:var(--text-muted);max-width:540px;margin:0 auto 2.25rem;line-height:1.7}
+    .hero-cta{display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap}
+    .hero-stats{display:flex;gap:2.5rem;justify-content:center;margin-top:4rem;flex-wrap:wrap}
+    .hs-val{font-size:1.8rem;font-weight:800;color:var(--text-primary)}
+    .hs-lbl{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em}
+    .section{padding:5rem 1.5rem}.section-inner{max-width:1080px;margin:0 auto}
+    .sec-tag{display:inline-block;background:rgba(0,212,255,.1);color:var(--accent);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.25rem .75rem;border-radius:20px;margin-bottom:.9rem}
+    .sec-title{font-size:clamp(1.5rem,3.5vw,2.3rem);font-weight:800;color:var(--text-primary);margin-bottom:.9rem}
+    .sec-sub{color:var(--text-muted);font-size:.95rem;max-width:500px;line-height:1.7}
+    .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.4rem;margin-top:2.75rem}
+    .plan-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:1.75rem;position:relative;transition:transform .3s,border-color .3s}
+    .plan-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,.25)}
+    .plan-card.feat{border-color:var(--accent)}
+    .p-badge{position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;font-size:.65rem;font-weight:800;padding:.2rem .7rem;border-radius:0 0 10px 10px;text-transform:uppercase;white-space:nowrap}
+    .p-name{font-size:.8rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem}
+    .p-roi{font-size:2.8rem;font-weight:900;color:var(--accent);line-height:1}
+    .p-period{font-size:.82rem;color:var(--text-muted);margin-bottom:1.4rem}
+    .p-feats{list-style:none;margin-bottom:1.5rem}
+    .p-feats li{font-size:.84rem;color:var(--text-muted);padding:.35rem 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;justify-content:space-between}
+    .p-feats li:last-child{border:none}.p-feats li b{color:var(--text-primary)}
+    .feats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.4rem;margin-top:2.75rem}
+    .feat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.6rem}
+    .feat-icon{font-size:2rem;margin-bottom:.9rem}
+    .feat-title{font-size:.95rem;font-weight:700;color:var(--text-primary);margin-bottom:.4rem}
+    .feat-desc{font-size:.84rem;color:var(--text-muted);line-height:1.65}
+    .mkt-table{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:2.75rem}
+    .mkt-table table{width:100%;border-collapse:collapse}
+    .mkt-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);padding:.85rem 1.1rem;text-align:left;border-bottom:1px solid var(--border);background:var(--bg-secondary)}
+    .mkt-table td{padding:.85rem 1.1rem;font-size:.88rem;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.03)}
+    .mkt-table tr:last-child td{border:none}
+    .coin-ic{width:26px;height:26px;border-radius:50%;background:rgba(0,212,255,.12);display:inline-flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:var(--accent);margin-right:.45rem;vertical-align:middle}
+    .faq-list{margin-top:2.25rem;max-width:740px}
+    .faq-item{border:1px solid var(--border);border-radius:12px;margin-bottom:.65rem;overflow:hidden}
+    .faq-q{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.1rem;cursor:pointer;color:var(--text-primary);font-weight:600;font-size:.92rem;user-select:none}
+    .faq-q:hover{background:rgba(255,255,255,.03)}
+    .faq-icon{color:var(--accent);transition:transform .3s}
+    .faq-item.open .faq-icon{transform:rotate(45deg)}
+    .faq-a{display:none;padding:0 1.1rem 1rem;font-size:.85rem;color:var(--text-muted);line-height:1.7}
+    .faq-item.open .faq-a{display:block}
+    .cta-sec{background:linear-gradient(135deg,rgba(0,212,255,.07),rgba(124,58,237,.07));border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 1.5rem;text-align:center}
+    .cta-sec h2{font-size:clamp(1.7rem,4vw,2.7rem);font-weight:900;color:var(--text-primary);margin-bottom:.9rem}
+    .cta-sec p{color:var(--text-muted);max-width:460px;margin:0 auto 2.25rem}
+    .footer{padding:3rem 2.5rem 2rem;border-top:1px solid var(--border)}
+    .footer-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
+    @media(max-width:680px){.footer-inner{grid-template-columns:1fr 1fr}}
+    .footer-brand p{color:var(--text-muted);font-size:.83rem;line-height:1.7;margin-top:.65rem;max-width:260px}
+    .f-col h4{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-primary);margin-bottom:.8rem}
+    .f-col a{display:block;color:var(--text-muted);font-size:.83rem;margin-bottom:.4rem;transition:color .2s}
+    .f-col a:hover{color:var(--accent)}
+    .footer-bot{max-width:1080px;margin:1.75rem auto 0;padding-top:1.25rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+    .footer-bot p{color:var(--text-muted);font-size:.78rem}
+  </style>
 </head>
 <body>
-  <div class="ticker-wrap">
-    <div class="ticker-inner container">
-      <div class="pill live">Live market demo</div>
-      <div class="ticker-track" aria-label="market ticker">
-        <div class="ticker-item"><b>BTC</b><span data-price="btc">$104,821</span><span data-change="btc" class="up">+2.1%</span></div>
-        <div class="ticker-item"><b>ETH</b><span data-price="eth">$5,148</span><span data-change="eth" class="up">+1.4%</span></div>
-        <div class="ticker-item"><b>SOL</b><span data-price="sol">$311</span><span data-change="sol" class="down">-0.5%</span></div>
-        <div class="ticker-item"><b>LINK</b><span data-price="link">$28.91</span><span data-change="link" class="up">+3.0%</span></div>
-        <div class="ticker-item"><b>BTC</b><span data-price="btc">$104,821</span><span data-change="btc" class="up">+2.1%</span></div>
-        <div class="ticker-item"><b>ETH</b><span data-price="eth">$5,148</span><span data-change="eth" class="up">+1.4%</span></div>
-      </div>
+<div class="ticker-bar"><div class="ticker-track" id="ticker"></div></div>
+<nav class="lnav">
+  <div class="lnav-logo">CFM<span>.</span></div>
+  <div class="lnav-links"><a href="#plans">Plans</a><a href="#features">Features</a><a href="#markets">Markets</a><a href="#faq">FAQ</a></div>
+  <div class="lnav-actions"><a href="login.html" class="btn btn-outline btn-sm">Sign In</a><a href="signup.html" class="btn btn-primary btn-sm">Get Started</a></div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Live · Trusted by 50,000+ investors</div>
+    <h1>Grow Your Wealth with<br/><span>Crypto Investments</span></h1>
+    <p>Professional algorithmic trading, DeFi yield strategies, and managed portfolios delivering up to 30% monthly returns.</p>
+    <div class="hero-cta"><a href="signup.html" class="btn btn-primary btn-lg">Start Investing Free →</a><a href="#plans" class="btn btn-outline btn-lg">View Plans</a></div>
+    <div class="hero-stats">
+      <div><div class="hs-val">$2.4B+</div><div class="hs-lbl">Assets Managed</div></div>
+      <div><div class="hs-val">50K+</div><div class="hs-lbl">Active Investors</div></div>
+      <div><div class="hs-val">99.9%</div><div class="hs-lbl">Uptime</div></div>
+      <div><div class="hs-val">24/7</div><div class="hs-lbl">Support</div></div>
     </div>
   </div>
+</section>
 
-  <div class="site-shell">
-    <header class="topbar container">
-      <a class="brand" href="index.html"><span class="brand-mark">◈</span><span>BlockHarbor Markets</span></a>
-      <nav class="nav desktop-nav">
-        <a href="#features">Features</a>
-        <a href="#markets">Markets</a>
-        <a href="#testimonials">Reviews</a>
-        <a href="#faq">FAQ</a>
-        <a href="dashboard.html">Dashboard</a>
-      </nav>
-      <div class="nav-actions">
-        <button class="btn btn-ghost theme-toggle" type="button">Light mode</button>
-        <a class="btn btn-ghost" href="login.html">Log in</a>
-        <a class="btn btn-primary" href="signup.html">Create account</a>
-      </div>
-    </header>
-
-    <main>
-      <section class="hero container">
-        <div class="hero-copy">
-          <div class="eyebrow">Training • Portfolio • Wallet-ready UI</div>
-          <h1>Original crypto-platform frontend with onboarding, KYC, and portfolio flows.</h1>
-          <p class="lead">This is a distinct static implementation inspired by common crypto brokerage patterns. It includes auth, wallet connect, KYC progress, transaction history, deposit and withdrawal screens, and a persistent demo dashboard.</p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="signup.html">Start onboarding</a>
-            <a class="btn btn-secondary" href="dashboard.html">Open dashboard</a>
-          </div>
-          <div class="hero-badges">
-            <span>Responsive layout</span>
-            <span>Wallet connect UI</span>
-            <span>Persistent demo state</span>
-          </div>
-          <div class="stats-inline section">
-            <div class="summary-card glass"><span class="muted">Supported markets</span><strong data-counter="120" data-suffix="+">0</strong></div>
-            <div class="summary-card glass"><span class="muted">Strategy modules</span><strong data-counter="12">0</strong></div>
-            <div class="summary-card glass"><span class="muted">Demo uptime</span><strong data-counter="99" data-suffix="%">0</strong></div>
-          </div>
-        </div>
-        <div class="hero-card glass">
-          <div class="stat-grid">
-            <div class="stat-card">
-              <span>Portfolio value</span>
-              <strong>$128,440.92</strong>
-              <small class="up">+6.42% today</small>
-            </div>
-            <div class="stat-card">
-              <span>Yield products</span>
-              <strong>12</strong>
-              <small>Flexible dashboard widgets</small>
-            </div>
-            <div class="stat-card wide">
-              <span>Market watch</span>
-              <div class="ticker-row">
-                <div><b>BTC</b><em data-price="btc">$104,821</em></div>
-                <div><b>ETH</b><em data-price="eth">$5,148</em></div>
-                <div><b>SOL</b><em data-price="sol">$311</em></div>
-              </div>
-            </div>
-            <div class="stat-card wide">
-              <span>Demo workflow</span>
-              <div class="metric-row">
-                <div class="metric-pill">1. Create account</div>
-                <div class="metric-pill">2. Finish KYC</div>
-                <div class="metric-pill">3. Reach dashboard</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="features" class="container section">
-        <div class="section-heading">
-          <div class="eyebrow">Feature set</div>
-          <h2>Everything needed for a polished crypto onboarding experience</h2>
-        </div>
-        <div class="feature-grid">
-          <article class="feature-card glass"><h3>Auth screens</h3><p>Sign up, log in, password visibility toggles, forgot-password modal, and demo session persistence.</p></article>
-          <article class="feature-card glass"><h3>KYC flow UI</h3><p>Five-step verification tracker for profile, identity upload, proof of address, selfie, and final review.</p></article>
-          <article class="feature-card glass"><h3>Wallet connect UI</h3><p>MetaMask detection, connect button, wallet state persistence, and dashboard badge updates.</p></article>
-          <article class="feature-card glass"><h3>User dashboard</h3><p>Portfolio cards, allocation chart, holdings table, activity feed, and quick action links.</p></article>
-          <article class="feature-card glass"><h3>Transactions</h3><p>Dedicated transaction history page with deposits, buys, withdrawals, and KYC-related activity.</p></article>
-          <article class="feature-card glass"><h3>Funding screens</h3><p>Deposit and withdrawal pages with QR placeholder, copy address, and validation-ready forms.</p></article>
-        </div>
-      </section>
-
-      <section id="markets" class="container section">
-        <div class="section-heading">
-          <div class="eyebrow">Markets</div>
-          <h2>Live demo market overview</h2>
-        </div>
-        <div class="market-grid">
-          <div class="market-card glass"><span>Bitcoin</span><strong data-price="btc">$104,821</strong><small data-change="btc" class="up">+2.1%</small></div>
-          <div class="market-card glass"><span>Ethereum</span><strong data-price="eth">$5,148</strong><small data-change="eth" class="up">+1.4%</small></div>
-          <div class="market-card glass"><span>Solana</span><strong data-price="sol">$311</strong><small data-change="sol" class="down">-0.5%</small></div>
-          <div class="market-card glass"><span>Chainlink</span><strong data-price="link">$28.91</strong><small data-change="link" class="up">+3.0%</small></div>
-        </div>
-      </section>
-
-      <section class="container section info-grid">
-        <div class="mini-card glass"><h3>Onboarding path</h3><p class="muted">Landing → signup → KYC → dashboard → funding → transaction review.</p></div>
-        <div class="mini-card glass"><h3>Demo persistence</h3><p class="muted">Local state keeps your onboarding, wallet, and settings progress.</p></div>
-        <div class="mini-card glass"><h3>Theme toggle</h3><p class="muted">Switch dark and light modes from the landing page or dashboard.</p></div>
-        <div class="mini-card glass"><h3>Original frontend</h3><p class="muted">Created as a distinct codebase rather than a direct reproduction of the reference site.</p></div>
-      </section>
-
-      <section class="container section cta-band glass">
-        <div>
-          <div class="eyebrow">Get started</div>
-          <h2>Move from landing page to dashboard in a clean, demo-ready flow.</h2>
-          <p class="lead small">Ideal as a starter kit for backend integration, API wiring, and deployment.</p>
-        </div>
-        <div class="panel-actions">
-          <a class="btn btn-primary" href="signup.html">Open signup</a>
-          <a class="btn btn-secondary" href="transactions.html">See transactions</a>
-        </div>
-      </section>
-
-      <section id="testimonials" class="container section">
-        <div class="section-heading">
-          <div class="eyebrow">Demo reviews</div>
-          <h2>Example social-proof components for the landing page</h2>
-        </div>
-        <div class="testimonial-grid">
-          <article class="testimonial glass"><div class="quote-mark">“</div><p>The onboarding journey feels polished and easy to extend into production.</p><strong>Product designer</strong></article>
-          <article class="testimonial glass"><div class="quote-mark">“</div><p>The dashboard structure is clean enough for real API integration and portfolio logic.</p><strong>Frontend engineer</strong></article>
-          <article class="testimonial glass"><div class="quote-mark">“</div><p>Great base for building a crypto brokerage demo without copying a source site literally.</p><strong>Founder</strong></article>
-        </div>
-      </section>
-
-      <section id="faq" class="container section">
-        <div class="section-heading">
-          <div class="eyebrow">FAQ</div>
-          <h2>Common onboarding questions</h2>
-        </div>
-        <div class="faq-list">
-          <details class="faq-item glass" open><summary>How do I create an account</summary><p>Create an account, verify your email, complete profile details, and continue to the KYC screen.</p></details>
-          <details class="faq-item glass"><summary>How does identity verification work</summary><p>The KYC page uses a step-based interface for profile, document upload, selfie check, and proof of address.</p></details>
-          <details class="faq-item glass"><summary>How do deposits and withdrawals appear</summary><p>The dashboard links to deposit and withdraw pages with a QR placeholder, copy address actions, and submission-ready forms.</p></details>
-          <details class="faq-item glass"><summary>Can I connect a wallet</summary><p>Yes. The demo includes a MetaMask-ready wallet connect UI and a fallback state if no provider is available.</p></details>
-        </div>
-      </section>
-
-      <section class="container section glass">
-        <div class="section-heading compact">
-          <div class="eyebrow">Newsletter</div>
-          <h2>Get product updates</h2>
-          <p class="lead small">Demo-only signup form for future CRM or mailing list integration.</p>
-        </div>
-        <form id="newsletterForm" class="newsletter-form">
-          <input type="email" placeholder="Enter your email" required />
-          <button class="btn btn-primary" type="submit">Subscribe</button>
-        </form>
-      </section>
-    </main>
-
-    <footer class="container footer">
-      <div>
-        <strong>BlockHarbor Markets</strong>
-        <p>Original demo frontend for crypto-style onboarding and dashboard experiences.</p>
-        <p class="footer-note">Built as a distinct static implementation inspired by a generic crypto-finance feature set.</p>
-      </div>
-      <div class="footer-links">
-        <a href="login.html">Login</a>
-        <a href="signup.html">Signup</a>
-        <a href="kyc.html">KYC</a>
-        <a href="dashboard.html">Dashboard</a>
-        <a href="settings.html">Settings</a>
-      </div>
-    </footer>
-  </div>
-
-  <button id="chatLauncher" class="chat-launcher">Support</button>
-  <div id="chatPanel" class="chat-panel hidden">
-    <div class="chat-header"><strong>Support placeholder</strong><button class="icon-btn" data-close-chat>&times;</button></div>
-    <div class="chat-body">
-      <p>This is a UI placeholder for a future live chat integration.</p>
-      <div class="chat-bubble agent">Hi, how can we help with your onboarding today?</div>
-      <div class="chat-bubble user">I need help verifying my wallet.</div>
+<section class="section" id="plans">
+  <div class="section-inner">
+    <div style="text-align:center"><div class="sec-tag">Investment Plans</div><h2 class="sec-title">Choose Your Growth Plan</h2><p class="sec-sub" style="margin:0 auto">From beginners to whales — earn more as you invest more.</p></div>
+    <div class="plans-grid">
+      <div class="plan-card"><div class="p-name">Starter</div><div class="p-roi">5%</div><div class="p-period">per month</div><ul class="p-feats"><li><span>Min Deposit</span><b>$100</b></li><li><span>Max Deposit</span><b>$999</b></li><li><span>Duration</span><b>30 days</b></li><li><span>Withdrawal</span><b>Any time</b></li></ul><a href="signup.html" class="btn btn-outline" style="width:100%;text-align:center">Get Started</a></div>
+      <div class="plan-card feat"><div class="p-badge">Most Popular</div><div class="p-name">Growth</div><div class="p-roi">12%</div><div class="p-period">per month</div><ul class="p-feats"><li><span>Min Deposit</span><b>$1,000</b></li><li><span>Max Deposit</span><b>$9,999</b></li><li><span>Duration</span><b>30 days</b></li><li><span>Withdrawal</span><b>Any time</b></li></ul><a href="signup.html" class="btn btn-primary" style="width:100%;text-align:center">Get Started</a></div>
+      <div class="plan-card"><div class="p-name">Pro</div><div class="p-roi">20%</div><div class="p-period">per month</div><ul class="p-feats"><li><span>Min Deposit</span><b>$10,000</b></li><li><span>Max Deposit</span><b>$49,999</b></li><li><span>Duration</span><b>30 days</b></li><li><span>Withdrawal</span><b>Any time</b></li></ul><a href="signup.html" class="btn btn-outline" style="width:100%;text-align:center">Get Started</a></div>
+      <div class="plan-card"><div class="p-name">Elite</div><div class="p-roi">30%</div><div class="p-period">per month</div><ul class="p-feats"><li><span>Min Deposit</span><b>$50,000</b></li><li><span>Max Deposit</span><b>Unlimited</b></li><li><span>Duration</span><b>30 days</b></li><li><span>Withdrawal</span><b>Any time</b></li></ul><a href="signup.html" class="btn btn-outline" style="width:100%;text-align:center">Get Started</a></div>
     </div>
-    <div class="chat-footer"><input type="text" placeholder="Type a message" disabled /><button class="btn btn-primary btn-sm" disabled>Send</button></div>
   </div>
+</section>
 
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+<section class="section" id="features" style="background:rgba(255,255,255,.01);border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div><div class="sec-tag">Why CFM</div><h2 class="sec-title">Built for Serious Investors</h2><p class="sec-sub">Every feature designed to maximize returns while keeping assets safe.</p></div>
+    <div class="feats-grid">
+      <div class="feat-card"><div class="feat-icon">🔐</div><div class="feat-title">Bank-Grade Security</div><div class="feat-desc">256-bit AES encryption, cold wallet storage, 2FA, and multi-sig on all withdrawals.</div></div>
+      <div class="feat-card"><div class="feat-icon">📈</div><div class="feat-title">Algorithmic Trading</div><div class="feat-desc">AI-powered bots execute thousands of trades per second, capturing arbitrage opportunities 24/7.</div></div>
+      <div class="feat-card"><div class="feat-icon">💸</div><div class="feat-title">Instant Withdrawals</div><div class="feat-desc">Request withdrawals any time. Processed within 1–3 business days to any supported wallet.</div></div>
+      <div class="feat-card"><div class="feat-icon">🌍</div><div class="feat-title">Global Access</div><div class="feat-desc">Invest from anywhere. Support for 50+ currencies and multiple blockchain networks.</div></div>
+      <div class="feat-card"><div class="feat-icon">📊</div><div class="feat-title">Real-Time Analytics</div><div class="feat-desc">Live portfolio dashboard with performance charts and detailed earnings tracking.</div></div>
+      <div class="feat-card"><div class="feat-icon">🛡️</div><div class="feat-title">Insured Deposits</div><div class="feat-desc">All deposits insured against platform risk up to $250,000 via institutional partners.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="markets">
+  <div class="section-inner">
+    <div><div class="sec-tag">Live Markets</div><h2 class="sec-title">Real-Time Crypto Prices</h2><p class="sec-sub">Live prices across all major assets we trade on your behalf.</p></div>
+    <div class="mkt-table"><table><thead><tr><th>Asset</th><th>Price (USD)</th><th>24h Change</th><th>Market Cap</th><th>Volume (24h)</th></tr></thead>
+    <tbody id="mktBody"><tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Loading…</td></tr></tbody></table></div>
+  </div>
+</section>
+
+<section class="section" id="faq" style="background:rgba(255,255,255,.01);border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div><div class="sec-tag">FAQ</div><h2 class="sec-title">Common Questions</h2></div>
+    <div class="faq-list">
+      <div class="faq-item"><div class="faq-q"><span>How do I start investing?</span><span class="faq-icon">+</span></div><div class="faq-a">Create an account, complete KYC, deposit funds, and select a plan. Earnings start accumulating immediately after deposit confirmation.</div></div>
+      <div class="faq-item"><div class="faq-q"><span>Are the returns guaranteed?</span><span class="faq-icon">+</span></div><div class="faq-a">Our strategies have consistently delivered advertised returns over 5 years. We maintain a reserve fund to cover performance gaps.</div></div>
+      <div class="faq-item"><div class="faq-q"><span>When can I withdraw?</span><span class="faq-icon">+</span></div><div class="faq-a">Any time. Withdrawals process within 1–3 business days after KYC approval. Minimum withdrawal is $50.</div></div>
+      <div class="faq-item"><div class="faq-q"><span>What cryptocurrencies do you accept?</span><span class="faq-icon">+</span></div><div class="faq-a">Bitcoin (BTC), Ethereum (ETH), USDT (TRC-20/ERC-20), BNB, Solana (SOL), and more.</div></div>
+      <div class="faq-item"><div class="faq-q"><span>Is there a referral program?</span><span class="faq-icon">+</span></div><div class="faq-a">Yes — earn 5% of your referral's first deposit. Your referral link is in your dashboard after signup.</div></div>
+      <div class="faq-item"><div class="faq-q"><span>Is my data safe?</span><span class="faq-icon">+</span></div><div class="faq-a">GDPR-compliant with end-to-end encryption. KYC documents are stored in isolated encrypted storage and never shared.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-sec">
+  <div class="sec-tag">Join 50,000+ Investors</div>
+  <h2>Ready to Grow Your Portfolio?</h2>
+  <p>Start with as little as $100. No lock-ups, no hidden fees. Withdraw any time.</p>
+  <div style="display:flex;gap:.9rem;justify-content:center;flex-wrap:wrap"><a href="signup.html" class="btn btn-primary btn-lg">Create Free Account →</a><a href="login.html" class="btn btn-outline btn-lg">Sign In</a></div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="lnav-logo">CFM<span style="color:var(--accent)">.</span></div><p>Professional crypto investment platform. Earn passive income through algorithmic trading.</p><div style="font-size:.7rem;color:var(--text-muted);margin-top:.5rem">Risk Disclosure: Crypto investments involve risk.</div></div>
+    <div class="f-col"><h4>Platform</h4><a href="signup.html">Get Started</a><a href="#plans">Plans</a><a href="#markets">Markets</a><a href="dashboard.html">Dashboard</a></div>
+    <div class="f-col"><h4>Account</h4><a href="login.html">Sign In</a><a href="signup.html">Register</a><a href="kyc.html">KYC</a><a href="settings.html">Settings</a></div>
+    <div class="f-col"><h4>Support</h4><a href="#faq">FAQ</a><a href="#">Contact</a><a href="#">Terms</a><a href="#">Privacy</a></div>
+  </div>
+  <div class="footer-bot"><p>© 2024 CryptoFinanceMarkets. All rights reserved.</p><p>Regulated · Secure · Trusted</p></div>
+</footer>
+
+<script src="assets/js/app.js"></script>
+<script>
+  // Ticker
+  const COINS=['BTC','ETH','BNB','SOL','ADA','DOT','LINK','AVAX','MATIC','UNI'];
+  function buildTicker(){
+    const items=COINS.map(s=>{const p=window.CFM.PRICES[s]||{};const c=p.change||((Math.random()*10-5).toFixed(2));const pr=p.price||(Math.random()*50000+100).toFixed(2);
+      return`<div class="t-item"><span class="t-sym">${s}</span><span>$${Number(pr).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</span><span class="${Number(c)>=0?'t-up':'t-dn'}">${Number(c)>=0?'+':''}${Number(c).toFixed(2)}%</span></div>`;
+    }).join('');
+    document.getElementById('ticker').innerHTML=items+items;
+  }
+  buildTicker();setInterval(buildTicker,5000);
+
+  // Markets table
+  const MCAP={BTC:'$1.9T',ETH:'$450B',BNB:'$88B',SOL:'$75B',ADA:'$18B',DOT:'$12B',LINK:'$9B',AVAX:'$14B'};
+  const VOL={BTC:'$42B',ETH:'$18B',BNB:'$2.1B',SOL:'$3.8B',ADA:'$680M',DOT:'$520M',LINK:'$430M',AVAX:'$820M'};
+  const NAMES={BTC:'Bitcoin',ETH:'Ethereum',BNB:'BNB',SOL:'Solana',ADA:'Cardano',DOT:'Polkadot',LINK:'Chainlink',AVAX:'Avalanche'};
+  function renderMkt(){
+    const syms=['BTC','ETH','BNB','SOL','ADA','DOT','LINK','AVAX'];
+    document.getElementById('mktBody').innerHTML=syms.map(s=>{
+      const p=window.CFM.PRICES[s]||{};const pr=p.price||(Math.random()*50000+100);const c=p.change||(Math.random()*10-5);
+      return`<tr><td><span class="coin-ic">${s.slice(0,3)}</span><b style="color:var(--text-primary)">${NAMES[s]}</b> <span style="color:var(--text-muted);font-size:.75rem">${s}</span></td><td style="color:var(--text-primary);font-weight:600">$${Number(pr).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td style="color:${c>=0?'var(--green)':'var(--red)'}">${c>=0?'+':''}${Number(c).toFixed(2)}%</td><td style="color:var(--text-muted)">${MCAP[s]||'—'}</td><td style="color:var(--text-muted)">${VOL[s]||'—'}</td></tr>`;
+    }).join('');
+  }
+  setTimeout(renderMkt,200);setInterval(renderMkt,4000);
+</script>
+</body></html>

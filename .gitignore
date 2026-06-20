@@ -1,0 +1,16 @@
+.env
+.env.local
+.env.production
+__pycache__/
+*.py[cod]
+*.db
+*.sqlite3
+data/
+uploads/
+.DS_Store
+*.log
+*.pid
+*.sock
+node_modules/
+venv/
+.venv/

@@ -1,44 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transactions — BlockHarbor Markets</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Transactions — CryptoFinanceMarkets</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+  <style>
+    .mini-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .ms{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem}
+    .ms-label{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem}
+    .ms-val{font-size:1.15rem;font-weight:700;color:var(--text-primary)}
+    .tx-container{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .tx-toolbar{display:flex;align-items:center;gap:.75rem;padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+    .f-tabs{display:flex;gap:.35rem}
+    .f-tab{padding:.35rem .8rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.8rem;cursor:pointer;transition:all .2s}
+    .f-tab.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.08)}
+    .tx-search input{background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;padding:.4rem .85rem;color:var(--text-primary);font-size:.84rem;outline:none;min-width:180px}
+    .tx-search input:focus{border-color:var(--accent)}
+    .tx-wrap{overflow-x:auto}
+    .tx-table{width:100%;border-collapse:collapse;min-width:560px}
+    .tx-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);background:var(--bg-secondary)}
+    .tx-table td{padding:.8rem 1rem;font-size:.86rem;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.03)}
+    .tx-table tr:last-child td{border:none}
+    .tx-table tr:hover td{background:rgba(255,255,255,.02)}
+    .tx-badge{padding:.15rem .55rem;border-radius:20px;font-size:.7rem;font-weight:700;text-transform:uppercase}
+    .tx-badge.deposit{background:rgba(34,197,94,.15);color:var(--green)}
+    .tx-badge.withdrawal{background:rgba(239,68,68,.15);color:var(--red)}
+    .tx-badge.earning{background:rgba(0,212,255,.15);color:var(--accent)}
+    .st{padding:.13rem .5rem;border-radius:10px;font-size:.7rem;font-weight:600}
+    .st.completed{background:rgba(34,197,94,.15);color:var(--green)}
+    .st.pending{background:rgba(251,191,36,.15);color:#fbbf24}
+    .st.failed{background:rgba(239,68,68,.15);color:var(--red)}
+    .tx-empty{text-align:center;padding:3.5rem 1rem;color:var(--text-muted);font-size:.88rem}
+    .pag{display:flex;justify-content:center;gap:.4rem;padding:1.1rem;flex-wrap:wrap}
+    .p-btn{padding:.3rem .65rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.8rem;cursor:pointer;transition:all .2s}
+    .p-btn.active,.p-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .p-btn:disabled{opacity:.3;cursor:not-allowed}
+  </style>
 </head>
-<body data-protected="true">
-  <div class="container page-shell">
-    <header class="subpage-topbar">
-      <a class="brand" href="index.html"><span class="brand-mark">◈</span>BlockHarbor Markets</a>
-      <div class="nav-actions">
-        <button class="btn btn-ghost theme-toggle" type="button">Light mode</button>
-        <a class="btn btn-ghost" href="dashboard.html">Dashboard</a>
-        <button class="btn btn-secondary" data-logout type="button">Logout</button>
-      </div>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><a href="index.html"><span class="logo-text">CFM</span><span class="logo-dot">.</span></a></div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">▪</span>Dashboard</a>
+      <a href="deposit.html" class="nav-item"><span class="nav-icon">↓</span>Deposit</a>
+      <a href="withdraw.html" class="nav-item"><span class="nav-icon">↑</span>Withdraw</a>
+      <a href="transactions.html" class="nav-item active"><span class="nav-icon">≡</span>Transactions</a>
+      <a href="kyc.html" class="nav-item"><span class="nav-icon">✪</span>KYC</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙</span>Settings</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-outline btn-sm" id="logoutBtn" style="width:100%">Logout</button></div>
+  </aside>
+  <main class="dashboard-main">
+    <header class="dash-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="dash-header-left"><h1 class="dash-title">Transactions</h1><p class="dash-subtitle">Full account activity history</p></div>
+      <div class="dash-header-right"><a href="deposit.html" class="btn btn-primary btn-sm">+ Deposit</a></div>
     </header>
-
-    <section class="section-heading compact">
-      <div class="eyebrow">Ledger</div>
-      <h1>Transaction history</h1>
-      <p class="lead small">A demo table for deposits, trades, verification milestones, and withdrawals.</p>
-    </section>
-
-    <section class="cards-3 section">
-      <div class="summary-card glass"><span class="muted">Entries</span><strong id="txCount">4 items</strong></div>
-      <div class="summary-card glass"><span class="muted">Latest status</span><strong>Mixed</strong></div>
-      <div class="summary-card glass"><span class="muted">Export readiness</span><strong>UI only</strong></div>
-    </section>
-
-    <section class="panel glass">
-      <div class="panel-head"><h2>All activity</h2><div class="chip-row"><a class="btn btn-secondary btn-sm" href="deposit.html">Deposit</a><a class="btn btn-secondary btn-sm" href="withdraw.html">Withdraw</a></div></div>
-      <table class="data-table">
-        <thead><tr><th>Type</th><th>Asset</th><th>Amount</th><th>Value</th><th>Status</th><th>Time</th></tr></thead>
-        <tbody id="transactionsTableBody"></tbody>
-      </table>
-    </section>
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+    <div class="mini-stats">
+      <div class="ms"><div class="ms-label">Deposited</div><div class="ms-val" id="sDep">—</div></div>
+      <div class="ms"><div class="ms-label">Withdrawn</div><div class="ms-val" id="sWit">—</div></div>
+      <div class="ms"><div class="ms-label">Earnings</div><div class="ms-val" id="sEar">—</div></div>
+      <div class="ms"><div class="ms-label">Pending</div><div class="ms-val" id="sPen">—</div></div>
+    </div>
+    <div class="tx-container">
+      <div class="tx-toolbar">
+        <div class="f-tabs">
+          <button class="f-tab active" data-f="all">All</button>
+          <button class="f-tab" data-f="deposit">Deposits</button>
+          <button class="f-tab" data-f="withdrawal">Withdrawals</button>
+          <button class="f-tab" data-f="earning">Earnings</button>
+        </div>
+        <div class="tx-search"><input type="text" id="txSearch" placeholder="Search…"/></div>
+      </div>
+      <div class="tx-wrap">
+        <table class="tx-table">
+          <thead><tr><th>Type</th><th>Amount</th><th>Currency</th><th>Status</th><th>Date</th><th>Ref</th></tr></thead>
+          <tbody id="txBody"><tr><td colspan="6"><div class="tx-empty">Loading…</div></td></tr></tbody>
+        </table>
+      </div>
+      <div class="pag" id="pag"></div>
+    </div>
+  </main>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+(async()=>{
+  const user=window.CFM.requireAuth();if(!user)return;
+  document.getElementById('logoutBtn').addEventListener('click',()=>window.CFM.logout());
+  document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+  const fmt=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2});
+  try{const d=await window.CFM.apiFetch('/api/dashboard/overview');
+    document.getElementById('sDep').textContent=fmt(d.deposited);
+    document.getElementById('sWit').textContent=fmt(d.withdrawn);
+    document.getElementById('sEar').textContent=fmt(d.earnings);
+    document.getElementById('sPen').textContent=fmt(d.pending||0);
+  }catch(e){}
+  let allTx=[],filter='all',q='',page=1;const PER=15;
+  try{const d=await window.CFM.apiFetch('/api/transactions?limit=200');allTx=d.transactions||d||[];}catch(e){}
+  function filtered(){return allTx.filter(t=>{const mt=filter==='all'||(t.type||'').toLowerCase()===filter;const ms=!q||`${t.amount} ${t.currency||''} ${t.created_at||''}`.toLowerCase().includes(q);return mt&&ms;});}
+  function render(){
+    const f=filtered();const pages=Math.max(1,Math.ceil(f.length/PER));page=Math.min(page,pages);
+    const sl=f.slice((page-1)*PER,page*PER);const body=document.getElementById('txBody');
+    if(!sl.length){body.innerHTML=`<tr><td colspan="6"><div class="tx-empty">${allTx.length?'No results.':'No transactions yet. <a href="deposit.html" style="color:var(--accent)">Deposit →</a>'}</div></td></tr>`;
+    }else{body.innerHTML=sl.map(t=>{const ty=(t.type||'deposit').toLowerCase();const st=(t.status||'pending').toLowerCase();const pos=ty==='deposit'||ty==='earning';
+      return`<tr><td><span class="tx-badge ${ty}">${ty}</span></td><td style="color:${pos?'var(--green)':'var(--red)'}">${pos?'+':'-'}${fmt(t.amount)}</td><td style="color:var(--text-muted)">${t.currency||'USD'}</td><td><span class="st ${st}">${st}</span></td><td style="color:var(--text-muted);font-size:.8rem">${t.created_at?new Date(t.created_at).toLocaleDateString():'—'}</td><td style="font-family:monospace;font-size:.72rem;color:var(--text-muted)">${t.tx_hash?t.tx_hash.slice(0,14)+'…':'—'}</td></tr>`;
+    }).join('');}
+    const pag=document.getElementById('pag');
+    if(pages<=1){pag.innerHTML='';return;}
+    let h=`<button class="p-btn" ${page===1?'disabled':''} id="pp">← Prev</button>`;
+    for(let i=1;i<=pages;i++){if(pages<=7||Math.abs(i-page)<=2||i===1||i===pages){h+=`<button class="p-btn ${i===page?'active':''}" data-p="${i}">${i}</button>`;}else if(Math.abs(i-page)===3){h+='<span style="color:var(--text-muted)">…</span>';}}
+    h+=`<button class="p-btn" ${page===pages?'disabled':''} id="np">Next →</button>`;
+    pag.innerHTML=h;
+    pag.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>{page=Number(b.dataset.p);render();}));
+    const pp=document.getElementById('pp'),np=document.getElementById('np');
+    if(pp)pp.addEventListener('click',()=>{page--;render();});
+    if(np)np.addEventListener('click',()=>{page++;render();});
+  }
+  document.querySelectorAll('.f-tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.f-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.f;page=1;render();}));
+  document.getElementById('txSearch').addEventListener('input',e=>{q=e.target.value.toLowerCase();page=1;render();});
+  render();
+})();
+</script>
+</body></html>

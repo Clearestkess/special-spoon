@@ -1,103 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KYC verification — BlockHarbor Markets</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KYC Verification — CryptoFinanceMarkets</title>
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .kyc-steps{display:flex;align-items:center;gap:.4rem;margin-bottom:2rem;flex-wrap:wrap}
+    .step-dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:var(--text-muted);transition:all .3s;flex-shrink:0}
+    .step-dot.active{border-color:var(--accent);color:var(--accent);box-shadow:0 0 10px rgba(0,212,255,.3)}
+    .step-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+    .step-sep{flex:1;height:1px;background:var(--border);min-width:20px}
+    .step-lbl{font-size:.75rem;color:var(--text-muted)}.step-lbl.active{color:var(--accent)}
+    .kyc-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:2rem;max-width:640px}
+    .kyc-step{display:none}.kyc-step.active{display:block}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:580px){.form-row{grid-template-columns:1fr}}
+    .upload-zone{border:2px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;cursor:pointer;position:relative;transition:border-color .2s;margin-bottom:1rem}
+    .upload-zone:hover{border-color:var(--accent);background:rgba(0,212,255,.03)}
+    .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .upload-zone .icon{font-size:2rem;margin-bottom:.5rem}
+    .upload-zone p{font-size:.85rem;color:var(--text-muted)}
+    .upload-zone p b{color:var(--accent)}
+    .file-chosen{font-size:.78rem;color:var(--green);margin-top:.4rem}
+    .step-nav{display:flex;gap:.75rem;margin-top:1.5rem}
+    .status-view{text-align:center;padding:3rem 2rem}
+    .status-icon{font-size:3.5rem;margin-bottom:1rem}
+    .status-view h2{font-size:1.4rem;font-weight:700;margin-bottom:.5rem}
+    .status-view p{color:var(--text-muted);max-width:380px;margin:0 auto 1.5rem}
+  </style>
 </head>
-<body data-protected="true">
-  <div class="container page-shell">
-    <header class="subpage-topbar">
-      <a class="brand" href="index.html"><span class="brand-mark">◈</span>BlockHarbor Markets</a>
-      <div class="nav-actions">
-        <button class="btn btn-ghost theme-toggle" type="button">Light mode</button>
-        <a class="btn btn-ghost" href="dashboard.html">Dashboard</a>
-        <a class="btn btn-ghost admin-only hidden" href="admin.html">Admin</a>
-        <button class="btn btn-secondary" data-logout type="button">Logout</button>
-      </div>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><a href="index.html"><span class="logo-text">CFM</span><span class="logo-dot">.</span></a></div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">▪</span>Dashboard</a>
+      <a href="deposit.html" class="nav-item"><span class="nav-icon">↓</span>Deposit</a>
+      <a href="withdraw.html" class="nav-item"><span class="nav-icon">↑</span>Withdraw</a>
+      <a href="transactions.html" class="nav-item"><span class="nav-icon">≡</span>Transactions</a>
+      <a href="kyc.html" class="nav-item active"><span class="nav-icon">✪</span>KYC</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙</span>Settings</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-outline btn-sm" id="logoutBtn" style="width:100%">Logout</button></div>
+  </aside>
+  <main class="dashboard-main">
+    <header class="dash-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="dash-header-left"><h1 class="dash-title">KYC Verification</h1><p class="dash-subtitle">Verify your identity to unlock withdrawals</p></div>
     </header>
 
-    <section class="section-heading compact">
-      <div class="eyebrow">Compliance flow</div>
-      <h1>KYC verification</h1>
-      <p class="lead small">Upload identity documents and move them into the admin review queue.</p>
-      <div class="progress-rail"><div id="kycProgressFill" class="progress-fill"></div></div>
-      <div id="kycCompletionLabel" class="inline-stat">Step 1 of 5</div>
-      <div id="kycStatusNote" class="notice hidden"></div>
-    </section>
+    <div id="viewApproved" style="display:none"><div class="kyc-card status-view"><div class="status-icon">✅</div><h2 style="color:var(--green)">Approved</h2><p>Your identity is verified. All platform features are unlocked.</p><a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a></div></div>
+    <div id="viewPending" style="display:none"><div class="kyc-card status-view"><div class="status-icon">⏳</div><h2 style="color:#fbbf24">Under Review</h2><p>Documents submitted. Review takes 1–3 business days.</p><a href="dashboard.html" class="btn btn-outline">Back to Dashboard</a></div></div>
+    <div id="viewRejected" style="display:none"><div class="kyc-card status-view"><div class="status-icon">❌</div><h2 style="color:var(--red)">Rejected</h2><p>Your submission was rejected. Please resubmit clearer documents.</p><button class="btn btn-primary" id="resubmitBtn">Resubmit</button></div></div>
 
-    <div class="kyc-layout">
-      <aside class="kyc-steps glass">
-        <button class="step-item active" data-step="0"><span>1</span> Personal details</button>
-        <button class="step-item" data-step="1"><span>2</span> Identity document</button>
-        <button class="step-item" data-step="2"><span>3</span> Proof of address</button>
-        <button class="step-item" data-step="3"><span>4</span> Selfie check</button>
-        <button class="step-item" data-step="4"><span>5</span> Final review</button>
-      </aside>
-
-      <section class="kyc-panel glass">
-        <div class="kyc-screen active" data-screen="0">
-          <h2>Personal details</h2>
-          <div class="form-grid">
-            <label>Full name<input type="text" placeholder="Alex Morgan" /></label>
-            <label>Date of birth<input type="date" /></label>
-            <label class="full">Residential address<input type="text" placeholder="Street, city, postal code" /></label>
-            <label>Country of residence<select><option>United States</option><option>United Kingdom</option><option>Germany</option></select></label>
-            <label>Occupation<input type="text" placeholder="Product manager" /></label>
+    <div id="viewForm">
+      <div class="kyc-steps">
+        <div class="step-dot active" id="d1">1</div><span class="step-lbl active" id="l1">Info</span>
+        <div class="step-sep"></div>
+        <div class="step-dot" id="d2">2</div><span class="step-lbl" id="l2">ID Doc</span>
+        <div class="step-sep"></div>
+        <div class="step-dot" id="d3">3</div><span class="step-lbl" id="l3">Selfie</span>
+        <div class="step-sep"></div>
+        <div class="step-dot" id="d4">4</div><span class="step-lbl" id="l4">Submit</span>
+      </div>
+      <div class="kyc-card">
+        <div class="kyc-step active" id="s1">
+          <h3 style="font-size:1.05rem;color:var(--text-primary);margin-bottom:1.25rem">Personal Information</h3>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">First Name</label><input type="text" class="form-control" id="kFirst" placeholder="John"/></div>
+            <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-control" id="kLast" placeholder="Doe"/></div>
           </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" class="form-control" id="kDob"/></div>
+            <div class="form-group"><label class="form-label">Nationality</label><input type="text" class="form-control" id="kNat" placeholder="American"/></div>
+          </div>
+          <div class="form-group"><label class="form-label">Address</label><input type="text" class="form-control" id="kAddr" placeholder="123 Main St, City, State"/></div>
+          <div class="form-group"><label class="form-label">Document Type</label>
+            <select class="form-control" id="kDoc"><option value="">Select…</option><option value="passport">Passport</option><option value="national_id">National ID</option><option value="drivers_license">Driver's License</option></select>
+          </div>
+          <div class="step-nav"><button class="btn btn-primary" id="n1">Continue →</button></div>
         </div>
 
-        <div class="kyc-screen" data-screen="1">
-          <h2>Identity document</h2>
-          <div class="upload-grid">
-            <div class="upload-box"><h3>Government ID</h3><p>Upload passport, driver’s license, or national ID.</p><input id="kycIdentityFile" type="file" /><button class="btn btn-primary btn-sm" type="button" data-upload-target="kycIdentityFile" data-step-key="identity" data-document-type="Government ID">Upload file</button></div>
-            <div class="upload-box"><h3>Optional reverse side</h3><p>If your document has a back side, upload it here.</p><input id="kycIdentityBackFile" type="file" /><button class="btn btn-secondary btn-sm" type="button" data-upload-target="kycIdentityBackFile" data-step-key="identity" data-document-type="Government ID Back">Upload file</button></div>
-          </div>
+        <div class="kyc-step" id="s2">
+          <h3 style="font-size:1.05rem;color:var(--text-primary);margin-bottom:1.25rem">Upload ID Document</h3>
+          <label class="upload-zone"><input type="file" id="fFront" accept="image/*,.pdf"/><div class="icon">🪪</div><p><b>Click to upload</b> — Front of ID</p><div class="file-chosen" id="nFront"></div></label>
+          <label class="upload-zone"><input type="file" id="fBack" accept="image/*,.pdf"/><div class="icon">🪪</div><p><b>Click to upload</b> — Back of ID (if applicable)</p><div class="file-chosen" id="nBack"></div></label>
+          <div class="step-nav"><button class="btn btn-outline" id="b2">← Back</button><button class="btn btn-primary" id="n2">Continue →</button></div>
         </div>
 
-        <div class="kyc-screen" data-screen="2">
-          <h2>Proof of address</h2>
-          <div class="upload-box">
-            <p>Upload a utility bill, bank statement, or other approved document issued within the last 90 days.</p>
-            <input id="kycAddressFile" type="file" />
-            <button class="btn btn-primary btn-sm" type="button" data-upload-target="kycAddressFile" data-step-key="address" data-document-type="Proof of Address">Upload file</button>
-          </div>
+        <div class="kyc-step" id="s3">
+          <h3 style="font-size:1.05rem;color:var(--text-primary);margin-bottom:1.25rem">Upload Selfie with ID</h3>
+          <label class="upload-zone"><input type="file" id="fSelfie" accept="image/*" capture="user"/><div class="icon">🤳</div><p><b>Click to upload selfie</b> — Hold your ID next to your face</p><div class="file-chosen" id="nSelfie"></div></label>
+          <div class="step-nav"><button class="btn btn-outline" id="b3">← Back</button><button class="btn btn-primary" id="n3">Continue →</button></div>
         </div>
 
-        <div class="kyc-screen" data-screen="3">
-          <h2>Selfie check</h2>
-          <div class="upload-box">
-            <p>Upload a current selfie or a holding-ID image for liveness review.</p>
-            <input id="kycSelfieFile" type="file" />
-            <button class="btn btn-primary btn-sm" type="button" data-upload-target="kycSelfieFile" data-step-key="selfie" data-document-type="Selfie Check">Upload file</button>
-          </div>
+        <div class="kyc-step" id="s4">
+          <h3 style="font-size:1.05rem;color:var(--text-primary);margin-bottom:1.25rem">Review & Submit</h3>
+          <div id="reviewBox" style="background:var(--bg-secondary);border-radius:10px;padding:1.1rem;margin-bottom:1.25rem;font-size:.87rem;line-height:2;color:var(--text-muted)"></div>
+          <div style="background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:.9rem;font-size:.82rem;color:var(--text-muted);margin-bottom:1.25rem">ℹ️ By submitting you confirm all information is accurate. Processing takes 1–3 business days.</div>
+          <div class="form-error" id="submitErr" style="display:none;margin-bottom:1rem"></div>
+          <div class="step-nav"><button class="btn btn-outline" id="b4">← Back</button><button class="btn btn-primary" id="submitKyc">Submit for Review</button></div>
         </div>
-
-        <div class="kyc-screen" data-screen="4">
-          <h2>Review and submit</h2>
-          <div class="review-card">
-            <p>Profile details entered</p>
-            <p>Identity and address uploads ready</p>
-            <p>Selfie check ready</p>
-            <div class="status-pill pending">Final review will send documents to the admin queue</div>
-          </div>
-          <div class="section">
-            <h3>Uploaded files</h3>
-            <div id="kycFileList" class="file-list"></div>
-          </div>
-        </div>
-
-        <div class="kyc-actions">
-          <button class="btn btn-secondary" id="prevStepBtn" type="button">Back</button>
-          <button class="btn btn-primary" id="nextStepBtn" type="button">Continue</button>
-        </div>
-      </section>
+      </div>
     </div>
-  </div>
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+  </main>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+(async()=>{
+  const user=window.CFM.requireAuth(); if(!user)return;
+  document.getElementById('logoutBtn').addEventListener('click',()=>window.CFM.logout());
+  document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+
+  let status=user.kycStatus||'not_submitted';
+  try{const d=await window.CFM.apiFetch('/api/kyc');status=d.status||status;}catch(e){}
+
+  const show=id=>['viewApproved','viewPending','viewRejected','viewForm'].forEach(v=>document.getElementById(v).style.display=v===id?'':'none');
+  if(status==='approved'){show('viewApproved');return;}
+  if(status==='pending'){show('viewPending');return;}
+  if(status==='rejected'){show('viewRejected');document.getElementById('resubmitBtn').onclick=()=>show('viewForm');return;}
+
+  let cur=1;
+  function goTo(n){
+    document.querySelectorAll('.kyc-step').forEach(e=>e.classList.remove('active'));
+    document.getElementById('s'+n).classList.add('active');
+    for(let i=1;i<=4;i++){
+      const d=document.getElementById('d'+i),l=document.getElementById('l'+i);
+      if(i<n){d.className='step-dot done';d.textContent='✓';l.className='step-lbl';}
+      else if(i===n){d.className='step-dot active';d.textContent=i;l.className='step-lbl active';}
+      else{d.className='step-dot';d.textContent=i;l.className='step-lbl';}
+    }
+    cur=n;
+  }
+
+  ['fFront','fBack','fSelfie'].forEach((id,i)=>{
+    const names=['nFront','nBack','nSelfie'];
+    document.getElementById(id).addEventListener('change',function(){
+      document.getElementById(names[i]).textContent=this.files[0]?'✓ '+this.files[0].name:'';
+    });
+  });
+
+  document.getElementById('n1').onclick=()=>{
+    if(!document.getElementById('kFirst').value||!document.getElementById('kLast').value||!document.getElementById('kDob').value||!document.getElementById('kDoc').value){window.CFM.showToast('Fill all fields','error');return;}
+    goTo(2);
+  };
+  document.getElementById('b2').onclick=()=>goTo(1);
+  document.getElementById('n2').onclick=()=>{
+    if(!document.getElementById('fFront').files[0]){window.CFM.showToast('Upload front of ID','error');return;}
+    goTo(3);
+  };
+  document.getElementById('b3').onclick=()=>goTo(2);
+  document.getElementById('n3').onclick=()=>{
+    if(!document.getElementById('fSelfie').files[0]){window.CFM.showToast('Upload selfie','error');return;}
+    document.getElementById('reviewBox').innerHTML=`
+      <div><b style="color:var(--text-primary)">Name:</b> ${document.getElementById('kFirst').value} ${document.getElementById('kLast').value}</div>
+      <div><b style="color:var(--text-primary)">DOB:</b> ${document.getElementById('kDob').value}</div>
+      <div><b style="color:var(--text-primary)">Nationality:</b> ${document.getElementById('kNat').value||'—'}</div>
+      <div><b style="color:var(--text-primary)">Document:</b> ${document.getElementById('kDoc').value}</div>
+      <div><b style="color:var(--text-primary)">Files:</b> ID Front ✔ ${document.getElementById('fBack').files[0]?'| ID Back ✔ ':''}| Selfie ✔</div>`;
+    goTo(4);
+  };
+  document.getElementById('b4').onclick=()=>goTo(3);
+  document.getElementById('submitKyc').onclick=async()=>{
+    const btn=document.getElementById('submitKyc');
+    btn.disabled=true;btn.textContent='Submitting…';
+    const fd=new FormData();
+    fd.append('first_name',document.getElementById('kFirst').value);
+    fd.append('last_name',document.getElementById('kLast').value);
+    fd.append('dob',document.getElementById('kDob').value);
+    fd.append('nationality',document.getElementById('kNat').value);
+    fd.append('address',document.getElementById('kAddr').value);
+    fd.append('document_type',document.getElementById('kDoc').value);
+    if(document.getElementById('fFront').files[0])fd.append('id_front',document.getElementById('fFront').files[0]);
+    if(document.getElementById('fBack').files[0])fd.append('id_back',document.getElementById('fBack').files[0]);
+    if(document.getElementById('fSelfie').files[0])fd.append('selfie',document.getElementById('fSelfie').files[0]);
+    try{
+      const r=await fetch('/api/kyc/submit',{method:'POST',headers:{'Authorization':'Bearer '+window.CFM.getToken()},body:fd});
+      const d=await r.json();
+      if(!r.ok)throw new Error(d.error||'Submission failed');
+      window.CFM.showToast('KYC submitted!','success');
+      setTimeout(()=>show('viewPending'),1200);
+    }catch(e){
+      document.getElementById('submitErr').textContent=e.message;
+      document.getElementById('submitErr').style.display='block';
+      btn.disabled=false;btn.textContent='Submit for Review';
+    }
+  };
+})();
+</script>
+</body></html>

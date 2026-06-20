@@ -895,6 +895,18 @@ def admin_review_kyc_file(file_id: int):
     return jsonify({"ok": True})
 
 
+@app.get("/debug")
+def debug_info():
+    return jsonify({
+        "base_dir":     str(BASE_DIR),
+        "db_backend":   DB_BACKEND,
+        "index_exists": (BASE_DIR / "index.html").exists(),
+        "css_exists":   (BASE_DIR / "assets" / "css" / "styles.css").exists(),
+        "js_exists":    (BASE_DIR / "assets" / "js" / "app.js").exists(),
+        "login_exists": (BASE_DIR / "login.html").exists(),
+    })
+
+
 @app.route("/", defaults={"path": "index.html"})
 @app.route("/<path:path>")
 def frontend(path: str):

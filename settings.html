@@ -1,59 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings — BlockHarbor Markets</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Settings — CryptoFinanceMarkets</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+  <style>
+    .set-layout{display:grid;grid-template-columns:190px 1fr;gap:2rem;max-width:860px}
+    @media(max-width:660px){.set-layout{grid-template-columns:1fr}}
+    .set-nav{list-style:none}
+    .set-nav li{margin-bottom:.2rem}
+    .set-nav a{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:10px;color:var(--text-muted);font-size:.88rem;text-decoration:none;transition:all .2s}
+    .set-nav a:hover{background:rgba(255,255,255,.04);color:var(--text-primary)}
+    .set-nav a.active{background:rgba(0,212,255,.09);color:var(--accent);border:1px solid rgba(0,212,255,.18)}
+    .set-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:2rem}
+    .set-section{display:none}.set-section.active{display:block}
+    .set-section h2{font-size:1.05rem;font-weight:700;color:var(--text-primary);margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)}
+    .av-row{display:flex;align-items:center;gap:1.25rem;margin-bottom:1.75rem}
+    .av-lg{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:700;color:#000;flex-shrink:0}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    @media(max-width:480px){.form-row{grid-template-columns:1fr}}
+    .divider{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
+    .tgl-row{display:flex;justify-content:space-between;align-items:center;padding:.7rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+    .tgl-row:last-of-type{border:none}
+    .tgl-lbl{font-size:.88rem;color:var(--text-primary)}
+    .tgl-desc{font-size:.75rem;color:var(--text-muted)}
+    .tgl{position:relative;width:44px;height:22px;flex-shrink:0}
+    .tgl input{opacity:0;width:0;height:0}
+    .tgl-sl{position:absolute;inset:0;background:var(--border);border-radius:22px;cursor:pointer;transition:background .3s}
+    .tgl-sl::before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .3s}
+    .tgl input:checked+.tgl-sl{background:var(--accent)}
+    .tgl input:checked+.tgl-sl::before{transform:translateX(22px)}
+    .danger{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.18);border-radius:10px;padding:1.1rem;margin-top:1.5rem}
+    .danger h3{color:var(--red);font-size:.88rem;font-weight:700;margin-bottom:.4rem}
+    .msg{font-size:.82rem;margin-bottom:.75rem;display:none}
+  </style>
 </head>
-<body data-protected="true">
-  <div class="container page-shell">
-    <header class="subpage-topbar">
-      <a class="brand" href="index.html"><span class="brand-mark">◈</span>BlockHarbor Markets</a>
-      <div class="nav-actions">
-        <button class="btn btn-ghost theme-toggle" type="button">Light mode</button>
-        <a class="btn btn-ghost" href="dashboard.html">Dashboard</a>
-        <button class="btn btn-secondary" data-logout type="button">Logout</button>
-      </div>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><a href="index.html"><span class="logo-text">CFM</span><span class="logo-dot">.</span></a></div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">▪</span>Dashboard</a>
+      <a href="deposit.html" class="nav-item"><span class="nav-icon">↓</span>Deposit</a>
+      <a href="withdraw.html" class="nav-item"><span class="nav-icon">↑</span>Withdraw</a>
+      <a href="transactions.html" class="nav-item"><span class="nav-icon">≡</span>Transactions</a>
+      <a href="kyc.html" class="nav-item"><span class="nav-icon">✪</span>KYC</a>
+      <a href="settings.html" class="nav-item active"><span class="nav-icon">⚙</span>Settings</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-outline btn-sm" id="logoutBtn" style="width:100%">Logout</button></div>
+  </aside>
+  <main class="dashboard-main">
+    <header class="dash-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="dash-header-left"><h1 class="dash-title">Settings</h1><p class="dash-subtitle">Manage your account</p></div>
     </header>
-
-    <section class="section-heading compact">
-      <div class="eyebrow">Preferences</div>
-      <h1>Account settings</h1>
-      <p class="lead small">Profile and notification settings stored in local demo state.</p>
-    </section>
-
-    <div class="page-grid">
-      <section class="panel glass">
-        <div class="panel-head"><h2>Preferences</h2><span class="pill">Demo persisted</span></div>
-        <form id="settingsForm" class="form-stack">
-          <label>Risk profile
-            <select id="riskProfile">
-              <option>Conservative</option>
-              <option>Balanced</option>
-              <option>Growth</option>
-              <option>Aggressive</option>
-            </select>
-          </label>
-          <label class="checkbox-row"><input id="prefEmailAlerts" type="checkbox" /> Email alerts</label>
-          <label class="checkbox-row"><input id="prefProductUpdates" type="checkbox" /> Product updates</label>
-          <label class="checkbox-row"><input id="prefTwoFactor" type="checkbox" /> Enable 2FA requirement</label>
-          <button class="btn btn-primary" type="submit">Save settings</button>
-        </form>
-      </section>
-
-      <aside class="panel glass">
-        <div class="panel-head"><h2>Profile</h2></div>
-        <div class="faq-list">
-          <div class="notice"><strong data-user-fullname>Alex Morgan</strong><br><span data-user-email>demo@blockharbor.app</span></div>
-          <div class="notice">Use this page to wire real user profile, notification, and security APIs later.</div>
-          <div class="notice">Add password reset, API key management, and verified device history in production.</div>
+    <div class="set-layout">
+      <ul class="set-nav">
+        <li><a href="#" class="active" data-tab="profile">👤 Profile</a></li>
+        <li><a href="#" data-tab="security">🔒 Security</a></li>
+        <li><a href="#" data-tab="notifications">🔔 Notifications</a></li>
+      </ul>
+      <div class="set-panel">
+        <div class="set-section active" id="tab-profile">
+          <h2>Profile Information</h2>
+          <div class="av-row">
+            <div class="av-lg" id="avLg">?</div>
+            <div><button class="btn btn-outline btn-sm" style="margin-bottom:.4rem">Upload Photo</button><div style="font-size:.72rem;color:var(--text-muted)">JPG/PNG, max 5MB</div></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">First Name</label><input type="text" class="form-control" id="pFirst"/></div>
+            <div class="form-group"><label class="form-label">Last Name</label><input type="text" class="form-control" id="pLast"/></div>
+          </div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" id="pEmail" readonly style="opacity:.55"/><div class="form-hint">Contact support to change email.</div></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Country</label><input type="text" class="form-control" id="pCountry"/></div>
+            <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-control" id="pPhone"/></div>
+          </div>
+          <div class="msg" id="profMsg"></div>
+          <button class="btn btn-primary" id="saveProf">Save Changes</button>
         </div>
-      </aside>
+
+        <div class="set-section" id="tab-security">
+          <h2>Security</h2>
+          <div class="form-group"><label class="form-label">Current Password</label><input type="password" class="form-control" id="secCur" placeholder="Current password" autocomplete="current-password"/></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">New Password</label><input type="password" class="form-control" id="secNew" placeholder="Min 8 chars" autocomplete="new-password"/></div>
+            <div class="form-group"><label class="form-label">Confirm New</label><input type="password" class="form-control" id="secCon" placeholder="Repeat" autocomplete="new-password"/></div>
+          </div>
+          <div class="msg" id="secMsg"></div>
+          <button class="btn btn-primary" id="savePwd">Update Password</button>
+          <hr class="divider"/>
+          <h3 style="font-size:.92rem;color:var(--text-primary);margin-bottom:.75rem">Two-Factor Authentication</h3>
+          <p style="font-size:.84rem;color:var(--text-muted);margin-bottom:1rem">Protect your account with 2FA via authenticator app.</p>
+          <button class="btn btn-outline" onclick="window.CFM.showToast('2FA setup coming soon!','info')">Enable 2FA</button>
+          <div class="danger"><h3>Danger Zone</h3><p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.75rem">Permanently delete your account and all data.</p><button class="btn btn-sm" style="background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25)" id="delAcc">Delete Account</button></div>
+        </div>
+
+        <div class="set-section" id="tab-notifications">
+          <h2>Notifications</h2>
+          <div class="tgl-row"><div><div class="tgl-lbl">Deposit Confirmations</div><div class="tgl-desc">When deposits are confirmed</div></div><label class="tgl"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div>
+          <div class="tgl-row"><div><div class="tgl-lbl">Withdrawal Updates</div><div class="tgl-desc">Processing and completion alerts</div></div><label class="tgl"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div>
+          <div class="tgl-row"><div><div class="tgl-lbl">Earnings Credited</div><div class="tgl-desc">When earnings are added</div></div><label class="tgl"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div>
+          <div class="tgl-row"><div><div class="tgl-lbl">KYC Status</div><div class="tgl-desc">Approval or rejection alerts</div></div><label class="tgl"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div>
+          <div class="tgl-row"><div><div class="tgl-lbl">Security Alerts</div><div class="tgl-desc">New logins and password changes</div></div><label class="tgl"><input type="checkbox" checked/><span class="tgl-sl"></span></label></div>
+          <div class="tgl-row"><div><div class="tgl-lbl">Marketing</div><div class="tgl-desc">Promotions and announcements</div></div><label class="tgl"><input type="checkbox"/><span class="tgl-sl"></span></label></div>
+          <div style="margin-top:1.25rem"><button class="btn btn-primary" onclick="window.CFM.showToast('Preferences saved!','success')">Save Preferences</button></div>
+        </div>
+      </div>
     </div>
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+  </main>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+(()=>{
+  const user=window.CFM.requireAuth();if(!user)return;
+  document.getElementById('logoutBtn').addEventListener('click',()=>window.CFM.logout());
+  document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+  document.getElementById('avLg').textContent=(user.firstName||user.email)[0].toUpperCase();
+  document.getElementById('pFirst').value=user.firstName||'';
+  document.getElementById('pLast').value=user.lastName||'';
+  document.getElementById('pEmail').value=user.email||'';
+  document.getElementById('pCountry').value=user.country||'';
+  document.getElementById('pPhone').value=user.phone||'';
+  document.querySelectorAll('.set-nav a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();
+    document.querySelectorAll('.set-nav a').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.set-section').forEach(x=>x.classList.remove('active'));
+    a.classList.add('active');document.getElementById('tab-'+a.dataset.tab).classList.add('active');
+  }));
+  const showMsg=(id,msg,ok)=>{const el=document.getElementById(id);el.textContent=msg;el.style.color=ok?'var(--green)':'var(--red)';el.style.display='block';};
+  document.getElementById('saveProf').addEventListener('click',async()=>{
+    try{await window.CFM.apiFetch('/api/auth/me',{method:'PATCH',body:JSON.stringify({firstName:document.getElementById('pFirst').value.trim(),lastName:document.getElementById('pLast').value.trim(),country:document.getElementById('pCountry').value.trim(),phone:document.getElementById('pPhone').value.trim()})});
+      showMsg('profMsg','✓ Profile saved.',true);window.CFM.showToast('Saved!','success');
+    }catch(e){showMsg('profMsg',e.message||'Failed.',false);}
+  });
+  document.getElementById('savePwd').addEventListener('click',async()=>{
+    const c=document.getElementById('secCur').value,n=document.getElementById('secNew').value,cf=document.getElementById('secCon').value;
+    if(!c||!n||!cf){showMsg('secMsg','Fill all fields.',false);return;}
+    if(n!==cf){showMsg('secMsg','Passwords don\'t match.',false);return;}
+    if(n.length<8){showMsg('secMsg','Min 8 characters.',false);return;}
+    try{await window.CFM.apiFetch('/api/auth/change-password',{method:'POST',body:JSON.stringify({current_password:c,new_password:n})});
+      showMsg('secMsg','✓ Password updated.',true);window.CFM.showToast('Password changed!','success');
+      ['secCur','secNew','secCon'].forEach(id=>document.getElementById(id).value='');
+    }catch(e){showMsg('secMsg',e.message||'Failed.',false);}
+  });
+  document.getElementById('delAcc').addEventListener('click',()=>{if(confirm('Permanently delete your account?'))window.CFM.showToast('Contact support to delete your account.','error');});
+})();
+</script>
+</body></html>

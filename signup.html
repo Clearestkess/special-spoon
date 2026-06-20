@@ -3,55 +3,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create account — BlockHarbor Markets</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Create Account — CryptoFinanceMarkets</title>
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media(max-width:480px){ .form-row { grid-template-columns: 1fr; } }
+    .password-strength { height: 4px; border-radius: 2px; margin-top: .4rem; transition: all .3s; background: var(--border); }
+    .strength-weak   { background: var(--red); width: 33%; }
+    .strength-medium { background: #fbbf24; width: 66%; }
+    .strength-strong { background: var(--green); width: 100%; }
+  </style>
 </head>
-<body class="auth-page">
-  <main class="auth-layout container narrow">
-    <a class="brand auth-brand" href="index.html"><span class="brand-mark">◈</span>BlockHarbor Markets</a>
-    <div class="auth-split">
-      <section class="auth-card glass wide-card">
-        <div class="section-heading compact">
-          <div class="eyebrow">Open account</div>
-          <h1>Create your account</h1>
-        </div>
-        <form id="signupForm" class="form-grid">
-          <label>First name<input type="text" id="firstName" placeholder="Alex" required /></label>
-          <label>Last name<input type="text" id="lastName" placeholder="Morgan" required /></label>
-          <label class="full">Email<input type="email" id="signupEmail" placeholder="you@example.com" required /></label>
-          <label>Password
-            <div class="password-wrap">
-              <input type="password" id="signupPassword" placeholder="Create a strong password" required />
-              <button type="button" class="text-btn" data-toggle-password="signupPassword">Show</button>
-            </div>
-          </label>
-          <label>Country<select id="country"><option>United States</option><option>United Kingdom</option><option>Germany</option><option>Singapore</option></select></label>
-          <label>Phone number<input type="tel" id="phoneNumber" placeholder="+1 555 123 4567" /></label>
-          <label>Referral code<input type="text" id="referralCode" placeholder="Optional" /></label>
-          <div class="full password-strength">
-            <div class="between"><span class="muted">Password strength</span><span id="strengthLabel" class="inline-stat">Too weak</span></div>
-            <div class="strength-bar"><div id="strengthFill" class="strength-fill"></div></div>
-          </div>
-          <label class="full checkbox-row"><input type="checkbox" required /> I agree to the terms and privacy policy</label>
-          <button class="btn btn-primary full" type="submit">Create account</button>
-        </form>
-        <p class="muted center">Already registered? <a href="login.html">Log in</a></p>
-      </section>
-
-      <aside class="auth-aside glass">
-        <div class="eyebrow">Account setup</div>
-        <h3>Next steps after signup</h3>
-        <div class="faq-list">
-          <div class="notice">Complete KYC in 5 guided steps</div>
-          <div class="notice">Connect your wallet or continue with demo mode</div>
-          <div class="notice">Review your holdings and activity on the dashboard</div>
-        </div>
-      </aside>
+<body>
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-left-content">
+      <div class="auth-brand"><div class="auth-brand-logo">CFM<span>.</span></div></div>
+      <h1 class="auth-headline">Start Earning<br/><span>Crypto Returns</span><br/>Today</h1>
+      <p class="auth-subtext">Join 50,000+ investors earning up to 30% monthly returns. Free to start, no hidden fees.</p>
+      <div class="auth-stats">
+        <div><div class="auth-stat-value">5%</div><div class="auth-stat-label">Min Monthly ROI</div></div>
+        <div><div class="auth-stat-value">$100</div><div class="auth-stat-label">Min Deposit</div></div>
+        <div><div class="auth-stat-value">24/7</div><div class="auth-stat-label">Live Support</div></div>
+      </div>
     </div>
-  </main>
-  <script src="assets/js/app.js"></script>
+  </div>
+  <div class="auth-right">
+    <div class="auth-form-box">
+      <h2>Create Account</h2>
+      <p>Get started in under 2 minutes — no credit card required</p>
+      <div class="auth-error" id="authError"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="form-control" id="firstName" placeholder="John" autocomplete="given-name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="form-control" id="lastName" placeholder="Doe" autocomplete="family-name" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-control" id="email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Country</label>
+          <input type="text" class="form-control" id="country" placeholder="United States" autocomplete="country-name" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <input type="tel" class="form-control" id="phone" placeholder="+1 555 000 0000" autocomplete="tel" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Min 8 characters" autocomplete="new-password" />
+        <div class="password-strength" id="strengthBar"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" id="confirmPassword" placeholder="Repeat password" autocomplete="new-password" />
+      </div>
+      <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:1rem">
+        By creating an account you agree to our <a href="#" style="color:var(--accent)">Terms of Service</a> and <a href="#" style="color:var(--accent)">Privacy Policy</a>.
+      </div>
+      <button class="btn btn-primary" id="signupBtn" style="width:100%">Create Free Account →</button>
+      <div class="auth-footer-text">Already have an account? <a href="login.html">Sign in</a></div>
+    </div>
+  </div>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+  if (window.CFM.getToken()) window.location.href = 'dashboard.html';
+  const errEl = document.getElementById('authError');
+
+  // Password strength
+  document.getElementById('password').addEventListener('input', function() {
+    const v = this.value; const bar = document.getElementById('strengthBar');
+    if (!v) { bar.className = 'password-strength'; return; }
+    if (v.length < 6) bar.className = 'password-strength strength-weak';
+    else if (v.length < 10 || !/[A-Z]/.test(v) || !/[0-9]/.test(v)) bar.className = 'password-strength strength-medium';
+    else bar.className = 'password-strength strength-strong';
+  });
+
+  document.getElementById('signupBtn').addEventListener('click', async () => {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const country   = document.getElementById('country').value.trim();
+    const phone     = document.getElementById('phone').value.trim();
+    const password  = document.getElementById('password').value;
+    const confirm   = document.getElementById('confirmPassword').value;
+    errEl.style.display = 'none';
+
+    if (!firstName || !lastName || !email || !password) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display = 'block'; return; }
+    if (password.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
+    if (password !== confirm) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+
+    const btn = document.getElementById('signupBtn');
+    btn.disabled = true; btn.textContent = 'Creating account…';
+    try {
+      const data = await window.CFM.apiFetch('/api/auth/signup', {
+        method: 'POST',
+        body: JSON.stringify({ firstName, lastName, email, password, country, phone })
+      });
+      window.CFM.setAuth(data.token, data.user);
+      window.CFM.showToast('Account created! Welcome to CFM 🎉', 'success');
+      setTimeout(() => { window.location.href = 'kyc.html'; }, 1000);
+    } catch(e) {
+      errEl.textContent = e.message || 'Registration failed. Please try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Create Free Account →';
+    }
+  });
+</script>
 </body>
 </html>

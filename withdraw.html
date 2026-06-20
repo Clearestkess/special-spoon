@@ -1,52 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Withdraw — BlockHarbor Markets</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Withdraw — CryptoFinanceMarkets</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+  <style>
+    .w-layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:860px}
+    @media(max-width:700px){.w-layout{grid-template-columns:1fr}}
+    .w-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
+    .w-card h3{font-size:.95rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem}
+    .bal-display{background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(124,58,237,.08));border:1px solid rgba(0,212,255,.2);border-radius:12px;padding:1.4rem;text-align:center;margin-bottom:1.5rem}
+    .bal-label{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.3rem}
+    .bal-amount{font-size:2rem;font-weight:800;color:var(--text-primary)}
+    .fee-box{background:var(--bg-secondary);border-radius:10px;padding:1rem;margin:1rem 0}
+    .fee-row{display:flex;justify-content:space-between;padding:.3rem 0;font-size:.84rem;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04)}
+    .fee-row:last-child{border:none;font-weight:700;color:var(--text-primary)}
+    .method-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+    .m-tab{padding:.4rem .85rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.82rem;cursor:pointer;transition:all .2s}
+    .m-tab.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.08)}
+    .kyc-warn{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.22);border-radius:10px;padding:.9rem;font-size:.84rem;color:#fca5a5;margin-bottom:1.25rem;max-width:860px}
+  </style>
 </head>
-<body data-protected="true">
-  <div class="container page-shell">
-    <header class="subpage-topbar">
-      <a class="brand" href="index.html"><span class="brand-mark">◈</span>BlockHarbor Markets</a>
-      <div class="nav-actions">
-        <button class="btn btn-ghost theme-toggle" type="button">Light mode</button>
-        <a class="btn btn-ghost" href="dashboard.html">Dashboard</a>
-        <button class="btn btn-secondary" data-logout type="button">Logout</button>
-      </div>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><a href="index.html"><span class="logo-text">CFM</span><span class="logo-dot">.</span></a></div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">▪</span>Dashboard</a>
+      <a href="deposit.html" class="nav-item"><span class="nav-icon">↓</span>Deposit</a>
+      <a href="withdraw.html" class="nav-item active"><span class="nav-icon">↑</span>Withdraw</a>
+      <a href="transactions.html" class="nav-item"><span class="nav-icon">≡</span>Transactions</a>
+      <a href="kyc.html" class="nav-item"><span class="nav-icon">✪</span>KYC</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙</span>Settings</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-outline btn-sm" id="logoutBtn" style="width:100%">Logout</button></div>
+  </aside>
+  <main class="dashboard-main">
+    <header class="dash-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="dash-header-left"><h1 class="dash-title">Withdraw Funds</h1><p class="dash-subtitle">Transfer to your wallet</p></div>
     </header>
-
-    <section class="section-heading compact">
-      <div class="eyebrow">Funding</div>
-      <h1>Withdraw assets</h1>
-      <p class="lead small">Frontend-only withdrawal form with transaction logging in demo state.</p>
-    </section>
-
-    <div class="page-grid">
-      <section class="panel glass">
-        <div class="panel-head"><h2>Withdrawal request</h2><span class="pill alert">Pending review</span></div>
-        <form id="withdrawForm" class="form-stack">
-          <label>Asset<select id="withdrawAsset"><option>USDT</option><option>BTC</option><option>ETH</option></select></label>
-          <label>Network<select id="withdrawNetwork"><option>ERC-20</option><option>TRC-20</option><option>BTC</option></select></label>
-          <label>Amount<input id="withdrawAmount" type="number" min="0" step="0.0001" placeholder="0.00" required /></label>
-          <label>Destination wallet<input id="withdrawAddress" type="text" placeholder="Paste destination address" required /></label>
-          <button class="btn btn-primary" type="submit">Submit withdrawal</button>
-        </form>
-      </section>
-
-      <aside class="panel glass">
-        <div class="panel-head"><h2>Before you send</h2></div>
-        <div class="faq-list">
-          <div class="notice">Add fee preview and available-balance checks</div>
-          <div class="notice">Require 2FA for production withdrawals</div>
-          <div class="notice">Persist approved destinations and audit logs</div>
+    <div id="kycWarn" class="kyc-warn" style="display:none">⚠️ <b>KYC Required:</b> Complete identity verification before withdrawing. <a href="kyc.html" style="color:#f87171;text-decoration:underline">Verify Now →</a></div>
+    <div class="w-layout">
+      <div>
+        <div class="w-card">
+          <h3>Available Balance</h3>
+          <div class="bal-display">
+            <div class="bal-label">Withdrawable</div>
+            <div class="bal-amount" id="avBal">$0.00</div>
+          </div>
+          <div class="fee-box">
+            <div class="fee-row"><span>Requested</span><span id="fReq">$0.00</span></div>
+            <div class="fee-row"><span>Network Fee</span><span id="fNet">$0.00</span></div>
+            <div class="fee-row"><span>Processing (1%)</span><span id="fProc">$0.00</span></div>
+            <div class="fee-row"><span>You Receive</span><span id="fRec" style="color:var(--green)">$0.00</span></div>
+          </div>
+          <ul style="font-size:.82rem;color:var(--text-muted);list-style:none;line-height:2.2">
+            <li>• Min withdrawal: <b style="color:var(--text-primary)">$50</b></li>
+            <li>• Processing: <b style="color:var(--text-primary)">1–3 business days</b></li>
+            <li>• KYC verification required</li>
+          </ul>
         </div>
-      </aside>
+      </div>
+      <div>
+        <div class="w-card">
+          <h3>Withdrawal Details</h3>
+          <div class="form-group"><label class="form-label">Currency</label>
+            <div class="method-tabs">
+              <button class="m-tab active" data-m="BTC">BTC</button>
+              <button class="m-tab" data-m="ETH">ETH</button>
+              <button class="m-tab" data-m="USDT">USDT</button>
+              <button class="m-tab" data-m="BNB">BNB</button>
+              <button class="m-tab" data-m="SOL">SOL</button>
+            </div>
+          </div>
+          <div class="form-group"><label class="form-label">Amount (USD)</label>
+            <input type="number" class="form-control" id="wAmt" placeholder="Enter amount" min="50"/>
+            <div class="form-hint">Available: <span id="avHint">$0.00</span> &nbsp;<button style="background:none;border:none;color:var(--accent);font-size:.78rem;cursor:pointer" id="maxBtn">Use Max</button></div>
+          </div>
+          <div class="form-group"><label class="form-label">Wallet Address</label><input type="text" class="form-control" id="wAddr" placeholder="Your wallet address"/></div>
+          <div class="form-group"><label class="form-label">Network</label>
+            <select class="form-control" id="wNet">
+              <option value="mainnet">Mainnet</option><option value="trc20">TRC-20</option><option value="erc20">ERC-20</option><option value="bep20">BEP-20</option>
+            </select>
+          </div>
+          <div class="form-error" id="wErr" style="display:none;margin-bottom:.75rem"></div>
+          <button class="btn btn-primary" id="submitW" style="width:100%">Submit Withdrawal</button>
+        </div>
+      </div>
     </div>
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+  </main>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+(async()=>{
+  const user=window.CFM.requireAuth();if(!user)return;
+  document.getElementById('logoutBtn').addEventListener('click',()=>window.CFM.logout());
+  document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+  if(user.kycStatus!=='approved'){document.getElementById('kycWarn').style.display='';document.getElementById('submitW').disabled=true;document.getElementById('submitW').textContent='KYC Required';}
+  let bal=0;
+  try{const d=await window.CFM.apiFetch('/api/dashboard/overview');bal=d.balance||0;
+    const f='$'+bal.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('avBal').textContent=f;document.getElementById('avHint').textContent=f;
+  }catch(e){}
+  document.getElementById('maxBtn').addEventListener('click',()=>{document.getElementById('wAmt').value=bal.toFixed(2);calcFees(bal);});
+  document.querySelectorAll('.m-tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.m-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');}));
+  function calcFees(a){const nf=a>0?5:0;const pf=a*.01;const rec=Math.max(0,a-nf-pf);const f=v=>'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    document.getElementById('fReq').textContent=f(a);document.getElementById('fNet').textContent=f(nf);document.getElementById('fProc').textContent=f(pf);document.getElementById('fRec').textContent=f(rec);}
+  document.getElementById('wAmt').addEventListener('input',e=>calcFees(Number(e.target.value)||0));
+  document.getElementById('submitW').addEventListener('click',async()=>{
+    const amt=Number(document.getElementById('wAmt').value);const addr=document.getElementById('wAddr').value.trim();const errEl=document.getElementById('wErr');errEl.style.display='none';
+    if(!amt||amt<50){errEl.textContent='Min $50.';errEl.style.display='block';return;}
+    if(amt>bal){errEl.textContent='Exceeds balance.';errEl.style.display='block';return;}
+    if(!addr){errEl.textContent='Enter wallet address.';errEl.style.display='block';return;}
+    const cur=document.querySelector('.m-tab.active')?.dataset.m||'BTC';
+    const btn=document.getElementById('submitW');btn.disabled=true;btn.textContent='Processing…';
+    try{
+      await window.CFM.apiFetch('/api/withdrawals',{method:'POST',body:JSON.stringify({amount:amt,currency:cur,wallet_address:addr,network:document.getElementById('wNet').value})});
+      window.CFM.showToast('Withdrawal submitted!','success');
+      setTimeout(()=>window.location.href='transactions.html',1800);
+    }catch(e){errEl.textContent=e.message||'Failed.';errEl.style.display='block';btn.disabled=false;btn.textContent='Submit Withdrawal';}
+  });
+})();
+</script>
+</body></html>

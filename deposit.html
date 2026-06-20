@@ -1,50 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Deposit — BlockHarbor Markets</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Deposit — CryptoFinanceMarkets</title>
+  <link rel="stylesheet" href="assets/css/styles.css"/>
+  <style>
+    .dep-layout{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:860px}
+    @media(max-width:700px){.dep-layout{grid-template-columns:1fr}}
+    .dep-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
+    .dep-card h3{font-size:.95rem;font-weight:700;color:var(--text-primary);margin-bottom:1.25rem}
+    .method-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.25rem}
+    .m-tab{padding:.4rem .85rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.82rem;cursor:pointer;transition:all .2s}
+    .m-tab.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.08)}
+    .wallet-box{background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1rem}
+    .w-label{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem}
+    .w-addr{font-size:.8rem;color:var(--text-primary);font-family:monospace;word-break:break-all;margin-bottom:.5rem}
+    .copy-btn{font-size:.75rem;color:var(--accent);background:none;border:1px solid rgba(0,212,255,.3);border-radius:6px;padding:.15rem .55rem;cursor:pointer}
+    .copy-btn:hover{background:rgba(0,212,255,.1)}
+    .qr-box{width:130px;height:130px;border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;margin:1rem auto;background:var(--bg-secondary)}
+    .presets{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-bottom:1rem}
+    .preset{padding:.45rem;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.82rem;cursor:pointer;transition:all .2s}
+    .preset:hover,.preset.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,.06)}
+    .fee-box{background:var(--bg-secondary);border-radius:10px;padding:1rem;margin:.75rem 0;font-size:.84rem}
+    .fee-row{display:flex;justify-content:space-between;padding:.3rem 0;color:var(--text-muted);border-bottom:1px solid rgba(255,255,255,.04)}
+    .fee-row:last-child{border:none;font-weight:700;color:var(--text-primary)}
+    .notice{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.18);border-radius:10px;padding:.9rem;font-size:.8rem;color:var(--text-muted);line-height:1.6;margin-top:1rem}
+    .net-badge{display:inline-block;padding:.1rem .45rem;border-radius:10px;background:rgba(124,58,237,.2);color:#a78bfa;font-size:.7rem;font-weight:700;margin-left:.3rem}
+  </style>
 </head>
-<body data-protected="true">
-  <div class="container page-shell">
-    <header class="subpage-topbar">
-      <a class="brand" href="index.html"><span class="brand-mark">◈</span>BlockHarbor Markets</a>
-      <div class="nav-actions">
-        <button class="btn btn-ghost theme-toggle" type="button">Light mode</button>
-        <a class="btn btn-ghost" href="dashboard.html">Dashboard</a>
-        <button class="btn btn-secondary" data-logout type="button">Logout</button>
-      </div>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><a href="index.html"><span class="logo-text">CFM</span><span class="logo-dot">.</span></a></div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item"><span class="nav-icon">▪</span>Dashboard</a>
+      <a href="deposit.html" class="nav-item active"><span class="nav-icon">↓</span>Deposit</a>
+      <a href="withdraw.html" class="nav-item"><span class="nav-icon">↑</span>Withdraw</a>
+      <a href="transactions.html" class="nav-item"><span class="nav-icon">≡</span>Transactions</a>
+      <a href="kyc.html" class="nav-item"><span class="nav-icon">✪</span>KYC</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙</span>Settings</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-outline btn-sm" id="logoutBtn" style="width:100%">Logout</button></div>
+  </aside>
+  <main class="dashboard-main">
+    <header class="dash-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="dash-header-left"><h1 class="dash-title">Deposit Funds</h1><p class="dash-subtitle">Add funds to your investment account</p></div>
     </header>
-
-    <section class="section-heading compact">
-      <div class="eyebrow">Funding</div>
-      <h1>Deposit assets</h1>
-      <p class="lead small">Demo deposit addresses and QR placeholders for future wallet/funding integration.</p>
-    </section>
-
-    <div class="page-grid">
-      <section class="panel glass">
-        <div class="panel-head"><h2>Bitcoin deposit</h2><span class="pill alert">Network: BTC</span></div>
-        <div class="qr-card">
-          <div class="qr-box" aria-hidden="true"></div>
-          <div class="address-row"><span class="address-code" id="btcAddress">bc1q-demo</span><button class="btn btn-secondary btn-sm" type="button" data-copy-address="BTC">Copy</button></div>
-          <div class="copy-note">Use this as a frontend placeholder only. Real addresses should come from your backend or custody provider.</div>
+    <div class="dep-layout">
+      <div>
+        <div class="dep-card">
+          <h3>Payment Method</h3>
+          <div class="method-tabs">
+            <button class="m-tab active" data-m="BTC">Bitcoin</button>
+            <button class="m-tab" data-m="ETH">Ethereum</button>
+            <button class="m-tab" data-m="USDT">USDT</button>
+            <button class="m-tab" data-m="BNB">BNB</button>
+            <button class="m-tab" data-m="SOL">Solana</button>
+          </div>
+          <div data-wallet="BTC"><div class="wallet-box"><div class="w-label">Bitcoin (BTC)<span class="net-badge">BTC</span></div><div class="w-addr" id="wBTC">1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa</div><button class="copy-btn" data-c="wBTC">📋 Copy</button></div></div>
+          <div data-wallet="ETH" style="display:none"><div class="wallet-box"><div class="w-label">Ethereum (ETH)<span class="net-badge">ERC-20</span></div><div class="w-addr" id="wETH">0x742d35Cc6634C0532925a3b844Bc454e4438f44e</div><button class="copy-btn" data-c="wETH">📋 Copy</button></div></div>
+          <div data-wallet="USDT" style="display:none"><div class="wallet-box"><div class="w-label">USDT<span class="net-badge">TRC-20</span></div><div class="w-addr" id="wUSDT">TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE</div><button class="copy-btn" data-c="wUSDT">📋 Copy</button></div></div>
+          <div data-wallet="BNB" style="display:none"><div class="wallet-box"><div class="w-label">BNB<span class="net-badge">BEP-20</span></div><div class="w-addr" id="wBNB">bnb1grpf0955h0ykzq3ar5nmum7y6gdfl6lxfn46h2</div><button class="copy-btn" data-c="wBNB">📋 Copy</button></div></div>
+          <div data-wallet="SOL" style="display:none"><div class="wallet-box"><div class="w-label">Solana (SOL)<span class="net-badge">SOL</span></div><div class="w-addr" id="wSOL">7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV1</div><button class="copy-btn" data-c="wSOL">📋 Copy</button></div></div>
+          <div class="qr-box">📲</div>
+          <div class="notice">⚠️ <b style="color:var(--accent)">Important:</b> Only send the selected coin to this address. Wrong coin = permanent loss. Min deposit <b style="color:var(--accent)">$50</b>. Credited after 2 confirmations.</div>
         </div>
-      </section>
-
-      <aside class="panel glass">
-        <div class="panel-head"><h2>USDT deposit</h2><span class="pill">ERC-20</span></div>
-        <div class="qr-card">
-          <div class="qr-box" aria-hidden="true"></div>
-          <div class="address-row"><span class="address-code" id="usdtAddress">0x-demo</span><button class="btn btn-secondary btn-sm" type="button" data-copy-address="USDT">Copy</button></div>
-          <div class="copy-note">Add network switching, address generation, and confirmations when connecting a real backend.</div>
+      </div>
+      <div>
+        <div class="dep-card">
+          <h3>Confirm Amount</h3>
+          <div class="form-group"><label class="form-label">Select Amount (USD)</label>
+            <div class="presets">
+              <button class="preset" data-a="100">$100</button><button class="preset" data-a="250">$250</button><button class="preset" data-a="500">$500</button>
+              <button class="preset" data-a="1000">$1,000</button><button class="preset" data-a="5000">$5,000</button><button class="preset" data-a="10000">$10,000</button>
+            </div>
+            <input type="number" class="form-control" id="depAmt" placeholder="Custom amount" min="50"/>
+          </div>
+          <div class="form-group"><label class="form-label">Investment Plan</label>
+            <select class="form-control" id="depPlan">
+              <option value="">No specific plan</option>
+              <option value="starter">Starter — 5%/mo ($100–$999)</option>
+              <option value="growth">Growth — 12%/mo ($1K–$9,999)</option>
+              <option value="pro">Pro — 20%/mo ($10K–$49,999)</option>
+              <option value="elite">Elite — 30%/mo ($50K+)</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Tx Hash (optional)</label><input type="text" class="form-control" id="depHash" placeholder="Blockchain transaction hash"/><div class="form-hint">Speeds up verification</div></div>
+          <div class="fee-box">
+            <div class="fee-row"><span>Amount</span><span id="fAmt">$0.00</span></div>
+            <div class="fee-row"><span>Processing Fee</span><span style="color:var(--green)">$0.00</span></div>
+            <div class="fee-row"><span>You Receive</span><span id="fRec" style="color:var(--accent)">$0.00</span></div>
+          </div>
+          <div class="form-error" id="depErr" style="display:none;margin-bottom:.75rem"></div>
+          <button class="btn btn-primary" id="confirmDep" style="width:100%">Confirm Deposit</button>
+          <div style="font-size:.72rem;color:var(--text-muted);text-align:center;margin-top:.6rem">By confirming you agree to our <a href="#" style="color:var(--accent)">Terms</a></div>
         </div>
-      </aside>
+      </div>
     </div>
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+  </main>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+(()=>{
+  const user=window.CFM.requireAuth();if(!user)return;
+  document.getElementById('logoutBtn').addEventListener('click',()=>window.CFM.logout());
+  document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+  let activeM='BTC';
+  document.querySelectorAll('.m-tab').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.m-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');activeM=b.dataset.m;
+    document.querySelectorAll('[data-wallet]').forEach(w=>w.style.display=w.dataset.wallet===activeM?'':'none');
+  }));
+  document.querySelectorAll('.copy-btn').forEach(b=>b.addEventListener('click',()=>{
+    const t=document.getElementById(b.dataset.c)?.textContent||'';
+    navigator.clipboard.writeText(t).then(()=>window.CFM.showToast('Address copied!','success'));
+  }));
+  function updSummary(a){const f=v=>'$'+v.toLocaleString('en-US',{minimumFractionDigits:2});document.getElementById('fAmt').textContent=f(a);document.getElementById('fRec').textContent=f(a);}
+  document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.preset').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+    document.getElementById('depAmt').value=b.dataset.a;updSummary(Number(b.dataset.a));
+  }));
+  document.getElementById('depAmt').addEventListener('input',e=>{document.querySelectorAll('.preset').forEach(x=>x.classList.remove('active'));updSummary(Number(e.target.value)||0);});
+  document.getElementById('confirmDep').addEventListener('click',async()=>{
+    const amt=Number(document.getElementById('depAmt').value);const errEl=document.getElementById('depErr');errEl.style.display='none';
+    if(!amt||amt<50){errEl.textContent='Minimum deposit is $50.';errEl.style.display='block';return;}
+    const btn=document.getElementById('confirmDep');btn.disabled=true;btn.textContent='Processing…';
+    try{
+      await window.CFM.apiFetch('/api/transactions',{method:'POST',body:JSON.stringify({type:'deposit',amount:amt,currency:activeM,plan:document.getElementById('depPlan').value,tx_hash:document.getElementById('depHash').value.trim()})});
+      window.CFM.showToast('Deposit recorded! Awaiting confirmation.','success');
+      setTimeout(()=>window.location.href='transactions.html',1800);
+    }catch(e){errEl.textContent=e.message||'Failed.';errEl.style.display='block';btn.disabled=false;btn.textContent='Confirm Deposit';}
+  });
+})();
+</script>
+</body></html>

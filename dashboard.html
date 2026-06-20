@@ -1,99 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard — BlockHarbor Markets</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — CryptoFinanceMarkets</title>
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1.25rem;margin-bottom:2rem}
+    .stat-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;position:relative;overflow:hidden}
+    .stat-card::after{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.12),transparent 70%)}
+    .stat-label{font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem}
+    .stat-value{font-size:1.7rem;font-weight:800;color:var(--text-primary)}
+    .stat-sub{font-size:.78rem;margin-top:.3rem;color:var(--text-muted)}
+    .stat-sub.up{color:var(--green)}.stat-sub.down{color:var(--red)}
+    .chart-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:2rem}
+    .chart-card h3{font-size:.95rem;color:var(--text-primary);margin-bottom:1rem}
+    .prices-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.9rem;margin-bottom:2rem}
+    .price-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.1rem}
+    .price-sym{font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase}
+    .price-val{font-size:1.05rem;font-weight:700;color:var(--text-primary);margin:.15rem 0}
+    .price-chg{font-size:.78rem}
+    .plans-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.1rem;margin-bottom:2rem}
+    .plan-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.4rem;position:relative}
+    .plan-card.featured{border-color:var(--accent)}
+    .plan-badge{position:absolute;top:1rem;right:1rem;background:var(--accent);color:#000;font-size:.65rem;font-weight:800;padding:.15rem .55rem;border-radius:20px;text-transform:uppercase}
+    .plan-name{font-size:1rem;font-weight:700;color:var(--text-primary);margin-bottom:.2rem}
+    .plan-roi{font-size:1.8rem;font-weight:900;color:var(--accent)}
+    .plan-roi span{font-size:.8rem;font-weight:400;color:var(--text-muted)}
+    .plan-details{list-style:none;margin:.8rem 0 1rem;font-size:.82rem}
+    .plan-details li{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid var(--border);color:var(--text-muted)}
+    .plan-details li:last-child{border:none}
+    .plan-details li b{color:var(--text-primary)}
+    .tx-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.5rem}
+    .tx-card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+    .tx-card-hdr h3{font-size:.95rem;color:var(--text-primary)}
+    .tx-table{width:100%;border-collapse:collapse}
+    .tx-table th{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);padding:.5rem .7rem;text-align:left;border-bottom:1px solid var(--border)}
+    .tx-table td{padding:.7rem .7rem;font-size:.85rem;color:var(--text-secondary);border-bottom:1px solid rgba(255,255,255,.03)}
+    .tx-table tr:last-child td{border:none}
+    .tx-badge{padding:.15rem .55rem;border-radius:20px;font-size:.68rem;font-weight:700;text-transform:uppercase}
+    .tx-badge.deposit{background:rgba(34,197,94,.15);color:var(--green)}
+    .tx-badge.withdrawal{background:rgba(239,68,68,.15);color:var(--red)}
+    .tx-badge.earning{background:rgba(0,212,255,.15);color:var(--accent)}
+    .empty-msg{text-align:center;padding:2rem;color:var(--text-muted);font-size:.88rem}
+  </style>
 </head>
-<body data-protected="true">
-  <div class="dashboard-shell">
-    <aside class="sidebar glass">
-      <a class="brand" href="index.html"><span class="brand-mark">◈</span>BlockHarbor</a>
-      <div class="user-chip">
-        <div class="avatar">AM</div>
-        <div>
-          <strong data-user-fullname>Alex Morgan</strong>
-          <div class="muted" data-user-email>demo@blockharbor.app</div>
-        </div>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo"><a href="index.html"><span class="logo-text">CFM</span><span class="logo-dot">.</span></a></div>
+    <nav class="sidebar-nav">
+      <a href="dashboard.html" class="nav-item active"><span class="nav-icon">▪</span>Dashboard</a>
+      <a href="deposit.html" class="nav-item"><span class="nav-icon">↓</span>Deposit</a>
+      <a href="withdraw.html" class="nav-item"><span class="nav-icon">↑</span>Withdraw</a>
+      <a href="transactions.html" class="nav-item"><span class="nav-icon">≡</span>Transactions</a>
+      <a href="kyc.html" class="nav-item"><span class="nav-icon">✪</span>KYC</a>
+      <a href="settings.html" class="nav-item"><span class="nav-icon">⚙</span>Settings</a>
+    </nav>
+    <div class="sidebar-footer"><button class="btn btn-outline btn-sm" id="logoutBtn" style="width:100%">Logout</button></div>
+  </aside>
+  <main class="dashboard-main">
+    <header class="dash-header">
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <div class="dash-header-left">
+        <h1 class="dash-title">Dashboard</h1>
+        <p class="dash-subtitle">Welcome back, <span id="userName">—</span></p>
       </div>
-      <nav class="sidebar-nav">
-        <a class="active" href="dashboard.html">Overview</a>
-        <a href="kyc.html">Verification</a>
-        <a href="transactions.html">Transactions</a>
-        <a href="deposit.html">Deposit</a>
-        <a href="withdraw.html">Withdraw</a>
-        <a href="settings.html">Settings</a>
-        <a class="admin-only hidden" href="admin.html">Admin Console</a>
-      </nav>
-      <div class="wallet-box">
-        <div class="between"><div class="muted">Wallet</div><div id="walletBadge" class="pill">Not connected</div></div>
-        <button class="btn btn-primary btn-block" id="walletConnectBtn" type="button">Connect MetaMask</button>
-        <div id="walletStatus" class="status-box">Wallet not connected</div>
+      <div class="dash-header-right">
+        <span class="kyc-badge" id="kycBadge">KYC: —</span>
+        <div class="user-avatar" id="userAvatar">?</div>
       </div>
-      <div class="section">
-        <button class="btn btn-secondary btn-block theme-toggle" type="button">Light mode</button>
-        <button class="btn btn-ghost btn-block" data-logout type="button">Logout</button>
-      </div>
-    </aside>
+    </header>
 
-    <main class="dashboard-main">
-      <header class="dashboard-topbar">
-        <div>
-          <div class="eyebrow">Portfolio overview</div>
-          <h1>Good morning, <span data-user-firstname>Alex</span></h1>
-          <div id="portfolioInline" class="inline-stat">4 tracked assets</div>
-        </div>
-        <div class="topbar-actions panel-actions">
-          <button class="btn btn-secondary" data-quick-link="deposit.html">Deposit</button>
-          <button class="btn btn-primary" data-quick-link="withdraw.html">Withdraw</button>
-        </div>
-      </header>
+    <div class="dash-grid">
+      <div class="stat-card"><div class="stat-label">Portfolio Balance</div><div class="stat-value" id="statBal">$0.00</div><div class="stat-sub up">Total value</div></div>
+      <div class="stat-card"><div class="stat-label">Total Deposited</div><div class="stat-value" id="statDep">$0.00</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card"><div class="stat-label">Total Withdrawn</div><div class="stat-value" id="statWit">$0.00</div><div class="stat-sub">All time</div></div>
+      <div class="stat-card"><div class="stat-label">Total Earnings</div><div class="stat-value" id="statEar">$0.00</div><div class="stat-sub up">Lifetime</div></div>
+    </div>
 
-      <section class="dashboard-grid">
-        <div class="panel glass highlight"><span>Total portfolio balance</span><strong id="totalBalance">$128,440.92</strong><small class="up">+$7,744 this month</small></div>
-        <div class="panel glass"><span>Available cash</span><strong id="availableCash">$19,200.00</strong><small>Ready for transfer</small></div>
-        <div class="panel glass"><span>Verification status</span><strong id="kycStatus">In review</strong><small id="kycDetail">2 of 5 steps complete</small></div>
-      </section>
+    <div class="chart-card">
+      <h3>Portfolio Performance (30 days)</h3>
+      <canvas id="portChart" height="110"></canvas>
+    </div>
 
-      <section class="dashboard-columns">
-        <div class="panel glass large">
-          <div class="panel-head"><h2>Holdings</h2><span class="muted">Live demo data</span></div>
-          <table class="holdings-table">
-            <thead><tr><th>Asset</th><th>Allocation</th><th>Price</th><th>24h</th></tr></thead>
-            <tbody id="holdingsTableBody"></tbody>
-          </table>
-        </div>
+    <h2 class="section-title">Live Prices</h2>
+    <div class="prices-grid" id="pricesGrid"></div>
 
-        <div class="stack-col">
-          <div class="panel glass">
-            <div class="panel-head"><h2>Allocation</h2><span class="muted">Demo SVG chart</span></div>
-            <div id="allocationChart"></div>
-          </div>
-          <div class="panel glass">
-            <div class="panel-head"><h2>KYC review note</h2></div>
-            <div id="kycReviewerPanel" class="empty-state">No reviewer note yet.</div>
-          </div>
-          <div id="walletArea" class="panel glass">
-            <div class="panel-head"><h2>Quick actions</h2></div>
-            <div class="quick-grid">
-              <button class="btn btn-secondary" data-quick-link="transactions.html" type="button">History</button>
-              <button class="btn btn-secondary" data-quick-link="settings.html" type="button">Preferences</button>
-              <button class="btn btn-primary" id="walletConnectBtnSecondary" type="button">Connect wallet</button>
-              <button class="btn btn-primary" data-quick-link="kyc.html" type="button">Finish KYC</button>
-            </div>
-          </div>
-          <div class="panel glass" id="activityFeed">
-            <div class="panel-head"><h2>Recent activity</h2></div>
-            <ul class="activity-list" id="activityList"></ul>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-  <script src="assets/js/app.js"></script>
-</body>
-</html>
+    <h2 class="section-title">Investment Plans</h2>
+    <div class="plans-grid">
+      <div class="plan-card"><div class="plan-name">Starter</div><div class="plan-roi">5%<span>/mo</span></div><ul class="plan-details"><li><span>Min</span><b>$100</b></li><li><span>Max</span><b>$999</b></li><li><span>Duration</span><b>30 days</b></li></ul><a href="deposit.html" class="btn btn-outline" style="width:100%;text-align:center">Invest</a></div>
+      <div class="plan-card featured"><div class="plan-badge">Popular</div><div class="plan-name">Growth</div><div class="plan-roi">12%<span>/mo</span></div><ul class="plan-details"><li><span>Min</span><b>$1,000</b></li><li><span>Max</span><b>$9,999</b></li><li><span>Duration</span><b>30 days</b></li></ul><a href="deposit.html" class="btn btn-primary" style="width:100%;text-align:center">Invest</a></div>
+      <div class="plan-card"><div class="plan-name">Pro</div><div class="plan-roi">20%<span>/mo</span></div><ul class="plan-details"><li><span>Min</span><b>$10,000</b></li><li><span>Max</span><b>$49,999</b></li><li><span>Duration</span><b>30 days</b></li></ul><a href="deposit.html" class="btn btn-outline" style="width:100%;text-align:center">Invest</a></div>
+      <div class="plan-card"><div class="plan-name">Elite</div><div class="plan-roi">30%<span>/mo</span></div><ul class="plan-details"><li><span>Min</span><b>$50,000</b></li><li><span>Max</span><b>Unlimited</b></li><li><span>Duration</span><b>30 days</b></li></ul><a href="deposit.html" class="btn btn-outline" style="width:100%;text-align:center">Invest</a></div>
+    </div>
+
+    <div class="tx-card">
+      <div class="tx-card-hdr"><h3>Recent Transactions</h3><a href="transactions.html" class="btn btn-sm btn-outline">View All</a></div>
+      <div id="txWrap"><div class="empty-msg">Loading…</div></div>
+    </div>
+  </main>
+</div>
+<script src="assets/js/app.js"></script>
+<script>
+(async()=>{
+  const user=window.CFM.requireAuth(); if(!user)return;
+  document.getElementById('userName').textContent=user.firstName||user.email.split('@')[0];
+  document.getElementById('userAvatar').textContent=(user.firstName||user.email)[0].toUpperCase();
+  const kb=document.getElementById('kycBadge');
+  const ks=user.kycStatus||'not_submitted';
+  kb.textContent='KYC: '+ks;
+  kb.style.color=ks==='approved'?'var(--green)':ks==='pending'?'#fbbf24':'var(--red)';
+  document.getElementById('logoutBtn').addEventListener('click',()=>window.CFM.logout());
+  document.getElementById('menuToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));
+  const fmt=n=>'$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  try{const d=await window.CFM.apiFetch('/api/dashboard/overview');
+    document.getElementById('statBal').textContent=fmt(d.balance);
+    document.getElementById('statDep').textContent=fmt(d.deposited);
+    document.getElementById('statWit').textContent=fmt(d.withdrawn);
+    document.getElementById('statEar').textContent=fmt(d.earnings);
+  }catch(e){}
+  const pts=window.CFM.generateChartData(30,5000,60,.6);
+  window.CFM.drawAreaChart(document.getElementById('portChart'),pts,110);
+  const SYMS=['BTC','ETH','BNB','SOL','ADA','DOT','LINK','AVAX'];
+  function renderPrices(){
+    document.getElementById('pricesGrid').innerHTML=SYMS.map(s=>{
+      const p=window.CFM.PRICES[s]||{};const c=p.change||0;
+      return`<div class="price-card"><div class="price-sym">${s}/USDT</div><div class="price-val">$${(p.price||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="price-chg" style="color:${c>=0?'var(--green)':'var(--red)'}">${c>=0?'+':''}${c.toFixed(2)}%</div></div>`;
+    }).join('');
+  }
+  renderPrices(); setInterval(renderPrices,3000);
+  try{const d=await window.CFM.apiFetch('/api/transactions?limit=5');
+    const txs=d.transactions||d||[];
+    const wrap=document.getElementById('txWrap');
+    if(!txs.length){wrap.innerHTML='<div class="empty-msg">No transactions yet. <a href="deposit.html" style="color:var(--accent)">Make a deposit →</a></div>';}
+    else{wrap.innerHTML=`<table class="tx-table"><thead><tr><th>Type</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead><tbody>${txs.map(t=>`<tr><td><span class="tx-badge ${(t.type||'').toLowerCase()}">${t.type||'—'}</span></td><td>$${Number(t.amount||0).toLocaleString('en-US',{minimumFractionDigits:2})}</td><td style="color:var(--text-muted);font-size:.8rem">${t.created_at?new Date(t.created_at).toLocaleDateString():'—'}</td><td><span class="tx-badge ${(t.type||'').toLowerCase()}">${t.status||'—'}</span></td></tr>`).join('')}</tbody></table>`;}
+  }catch(e){document.getElementById('txWrap').innerHTML='<div class="empty-msg">Could not load transactions.</div>';}
+})();
+</script>
+</body></html>
