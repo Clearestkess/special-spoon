@@ -20,6 +20,8 @@ DEFAULT_UPLOAD_ROOT = BACKEND_DIR / "uploads" / "kyc"
 
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 DB_BACKEND = "postgres" if DATABASE_URL.startswith(("postgres://", "postgresql://")) else "sqlite"
+print("DB_BACKEND =", DB_BACKEND)
+print("DATABASE_URL EXISTS =", bool(DATABASE_URL))
 SQLITE_PATH = Path(os.getenv("SQLITE_PATH", str(DEFAULT_SQLITE_PATH)))
 UPLOAD_ROOT = Path(os.getenv("UPLOAD_ROOT", str(DEFAULT_UPLOAD_ROOT)))
 SESSION_DAYS = int(os.getenv("SESSION_DAYS", "14"))
