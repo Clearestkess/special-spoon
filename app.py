@@ -237,7 +237,11 @@ def adapt_sql(sql: str) -> str:
 
 def connect_db():
     if DB_BACKEND == "postgres":
-        return pg_connect(DATABASE_URL, row_factory=dict_row)
+        return pg_connect(
+            DATABASE_URL,
+            row_factory=dict_row
+        )
+
     conn = sqlite3.connect(SQLITE_PATH)
     conn.row_factory = sqlite3.Row
     return conn
