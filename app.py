@@ -35,7 +35,7 @@ APP_ENV = os.getenv("APP_ENV", "development")
 if DB_BACKEND == "postgres":
     from psycopg import connect as pg_connect
     from psycopg.rows import dict_row
-init_db()
+
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 app.config["MAX_CONTENT_LENGTH"] = MAX_UPLOAD_MB * 1024 * 1024
