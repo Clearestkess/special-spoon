@@ -314,7 +314,7 @@ def init_db() -> None:
         conn.executescript(SQLITE_SCHEMA)
     else:
         for statement in POSTGRES_SCHEMA:
-            conn.execute(statement)
+            execute(statement, conn=conn)
 
     ensure_column(conn, "users", "role", "role TEXT NOT NULL DEFAULT 'user'")
     ensure_column(conn, "kyc", "status", "status TEXT NOT NULL DEFAULT 'draft'")
@@ -445,14 +445,14 @@ def ensure_user_bootstrap(user_id: int, conn=None) -> None:
     if not query_one("SELECT user_id FROM settings WHERE user_id = ?", (user_id,), conn=target):
         execute(
             "INSERT INTO settings (user_id, risk_profile, email_alerts, product_updates, two_factor) VALUES (?, ?, ?, ?, ?)",
-            (user_id, "Balanced", 1, 1, 0),
+            (user_id, "Balanced", True, True, False),
             conn=target,
         )
 
     if not query_one("SELECT user_id FROM kyc WHERE user_id = ?", (user_id,), conn=target):
         execute(
             "INSERT INTO kyc (user_id, current_step, submitted, status) VALUES (?, ?, ?, ?)",
-            (user_id, 0, 0, "draft"),
+            (user_id, 0, False, "draft"),
             conn=target,
         )
 
@@ -698,9 +698,9 @@ def update_settings():
         "UPDATE settings SET risk_profile = ?, email_alerts = ?, product_updates = ?, two_factor = ? WHERE user_id = ?",
         (
             payload.get("riskProfile") or "Balanced",
-            1 if payload.get("emailAlerts") else 0,
-            1 if payload.get("productUpdates") else 0,
-            1 if payload.get("twoFactor") else 0,
+            bool(payload.get("emailAlerts")),
+            bool(payload.get("productUpdates")),
+            bool(payload.get("twoFactor")),
             g.current_user["id"],
         ),
     )
@@ -743,7 +743,7 @@ def update_kyc_draft():
 def submit_kyc():
     execute(
         "UPDATE kyc SET current_step = 4, submitted = ?, submitted_at = ?, status = 'submitted' WHERE user_id = ?",
-        (1, iso_now(), g.current_user["id"]),
+        (True, iso_now(), g.current_user["id"]),
     )
     commit()
     record_transaction(g.current_user["id"], "KYC", "Verification package", "5 checklist items", "Submitted", "In review")
@@ -820,7 +820,7 @@ def admin_overview():
     stats = {
         "users": query_one("SELECT COUNT(*) AS c FROM users")["c"],
         "pendingFiles": query_one("SELECT COUNT(*) AS c FROM kyc_files WHERE status = 'uploaded'")["c"],
-        "submittedKyc": query_one("SELECT COUNT(*) AS c FROM kyc WHERE submitted = ?", (1,))["c"],
+        "submittedKyc": query_one("SELECT COUNT(*) AS c FROM kyc WHERE submitted = ?", (True,))["c"],
         "transactions": query_one("SELECT COUNT(*) AS c FROM transactions")["c"],
     }
     recent_users = query_all("SELECT id, first_name, last_name, email, role, created_at FROM users ORDER BY id DESC LIMIT 6")
