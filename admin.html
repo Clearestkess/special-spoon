@@ -8,51 +8,628 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --accent: #00d4ff;
+      --purple: #7c3aed;
+      --green: #22c55e;
+      --red: #ef4444;
+      --orange: #f59e0b;
+      --bg: #0a0e1a;
+      --bg2: #111827;
+      --bg3: #1a2236;
+      --border: rgba(255,255,255,0.08);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --sidebar-w: 240px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: var(--sidebar-w); min-height: 100vh; background: var(--bg2);
+      border-right: 1px solid var(--border); display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; z-index: 100; transition: transform .25s ease;
+    }
+    .sidebar-brand {
+      padding: 20px 20px 16px; border-bottom: 1px solid var(--border);
+      font-weight: 800; font-size: 15px; color: var(--accent); letter-spacing: -.3px;
+    }
+    .sidebar-brand span { opacity: .5; font-weight: 400; font-size: 11px; display: block; color: var(--muted); margin-top: 2px; }
+    .sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-btn {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px;
+      border: none; background: none; color: var(--muted); font-size: 13.5px; font-weight: 500;
+      cursor: pointer; text-align: left; width: 100%; transition: all .15s;
+    }
+    .nav-btn:hover { background: rgba(255,255,255,.05); color: var(--text); }
+    .nav-btn.active { background: rgba(0,212,255,.1); color: var(--accent); }
+    .nav-btn .icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-divider { height: 1px; background: var(--border); margin: 8px 0; }
+    .sidebar-user {
+      padding: 14px 16px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-avatar {
+      width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--purple));
+      display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .sidebar-user-info { min-width: 0; }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sidebar-user-role { font-size: 11px; color: var(--accent); }
+
+    /* ── Main ── */
+    #main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Topbar ── */
+    #topbar {
+      position: sticky; top: 0; z-index: 50; background: rgba(10,14,26,.9);
+      backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+      padding: 14px 28px; display: flex; align-items: center; justify-content: space-between;
+    }
+    #topbar h1 { font-size: 18px; font-weight: 700; }
+    .topbar-actions { display: flex; gap: 10px; align-items: center; }
+    .hamburger { display: none; background: none; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; color: var(--text); cursor: pointer; font-size: 18px; }
+
+    /* ── Content ── */
+    #content { padding: 28px; flex: 1; }
+
+    /* ── Stat Cards ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px;
+      position: relative; overflow: hidden; transition: border-color .2s;
+    }
+    .stat-card:hover { border-color: rgba(0,212,255,.3); }
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--purple));
+    }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+    .stat-value { font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; }
+    .stat-icon { position: absolute; right: 18px; top: 18px; font-size: 22px; opacity: .15; }
+
+    /* ── Panels ── */
+    .panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .panel-head {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-head h2 { font-size: 15px; font-weight: 700; }
+    .panel-body { padding: 20px; }
+
+    /* ── Tabs ── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── Two-col grid ── */
+    .two-col { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    thead th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    tbody td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,.02); }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .badge-admin { background: rgba(124,58,237,.2); color: #a78bfa; }
+    .badge-user { background: rgba(148,163,184,.1); color: var(--muted); }
+    .badge-approved { background: rgba(34,197,94,.15); color: #4ade80; }
+    .badge-submitted { background: rgba(0,212,255,.12); color: var(--accent); }
+    .badge-pending, .badge-uploaded { background: rgba(245,158,11,.12); color: #fbbf24; }
+    .badge-rejected, .badge-needs_attention { background: rgba(239,68,68,.12); color: #f87171; }
+    .badge-draft { background: rgba(148,163,184,.1); color: var(--muted); }
+
+    /* ── File row ── */
+    .file-row {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .file-row:last-child { border-bottom: none; }
+    .file-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .file-name { font-weight: 600; font-size: 13.5px; }
+    .file-sub { font-size: 11.5px; color: var(--muted); }
+    .file-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    /* ── User chip ── */
+    .user-chip { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+    .chip-avatar {
+      width: 30px; height: 30px; border-radius: 50%; background: var(--bg3);
+      display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;
+      border: 1px solid var(--border); flex-shrink: 0;
+    }
+
+    /* ── KYC filter tabs ── */
+    .filter-tabs { display: flex; gap: 4px; padding: 16px 20px 0; }
+    .filter-tab {
+      padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: none;
+      color: var(--muted); font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s;
+    }
+    .filter-tab:hover { border-color: rgba(0,212,255,.3); color: var(--text); }
+    .filter-tab.active { background: rgba(0,212,255,.1); border-color: var(--accent); color: var(--accent); }
+
+    /* ── Search ── */
+    .search-bar { padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .search-bar input {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-size: 13.5px; padding: 8px 14px; outline: none;
+    }
+    .search-bar input:focus { border-color: rgba(0,212,255,.4); }
+
+    /* ── Buttons ── */
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; font-size: 12.5px; font-weight: 600; border: 1px solid transparent; cursor: pointer; transition: all .15s; text-decoration: none; white-space: nowrap; }
+    .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); }
+    .btn-primary:hover { background: #00b8d9; }
+    .btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.04); }
+    .btn-success { background: rgba(34,197,94,.15); color: #4ade80; border-color: rgba(34,197,94,.3); }
+    .btn-success:hover { background: rgba(34,197,94,.25); }
+    .btn-danger { background: rgba(239,68,68,.12); color: #f87171; border-color: rgba(239,68,68,.25); }
+    .btn-danger:hover { background: rgba(239,68,68,.22); }
+    .btn-ghost { background: none; border: none; color: var(--muted); padding: 6px 10px; }
+    .btn-ghost:hover { color: var(--text); }
+    .btn-sm { padding: 4px 10px; font-size: 11.5px; }
+
+    /* ── Empty / Loading ── */
+    .empty-state { padding: 40px 20px; text-align: center; color: var(--muted); font-size: 14px; }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; right: 24px; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 18px; font-size: 13.5px; font-weight: 500; z-index: 9999;
+      opacity: 0; transform: translateY(8px); transition: all .25s; pointer-events: none; max-width: 320px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.ok { border-color: rgba(34,197,94,.4); color: #4ade80; }
+    #toast.err { border-color: rgba(239,68,68,.4); color: #f87171; }
+
+    /* ── Overlay ── */
+    #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 99; }
+
+    /* ── Mobile ── */
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .two-col { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      #sidebar { transform: translateX(-100%); }
+      #sidebar.open { transform: translateX(0); }
+      #sidebar-overlay { display: block; opacity: 0; pointer-events: none; transition: opacity .25s; }
+      #sidebar-overlay.show { opacity: 1; pointer-events: all; }
+      #main { margin-left: 0; }
+      .hamburger { display: block; }
+      #content { padding: 16px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    }
+  </style>
 </head>
-<body data-protected="true" data-admin-required="true">
-  <div class="container page-shell">
-    <header class="subpage-topbar">
-      <a class="brand" href="index.html"><span class="brand-mark">◈</span>BlockHarbor Markets</a>
-      <div class="nav-actions">
-        <button class="btn btn-ghost theme-toggle" type="button">Light mode</button>
-        <a class="btn btn-ghost" href="dashboard.html">Dashboard</a>
-        <button class="btn btn-secondary" data-logout type="button">Logout</button>
+<body>
+
+<div id="sidebar-overlay"></div>
+
+<!-- Sidebar -->
+<nav id="sidebar">
+  <div class="sidebar-brand">
+    ◈ BlockHarbor<span>Admin Console</span>
+  </div>
+  <div class="sidebar-nav">
+    <button class="nav-btn active" data-tab="overview"><span class="icon">📊</span>Dashboard</button>
+    <button class="nav-btn" data-tab="users"><span class="icon">👥</span>Users</button>
+    <button class="nav-btn" data-tab="kyc"><span class="icon">🔍</span>KYC Review</button>
+    <button class="nav-btn" data-tab="transactions"><span class="icon">💸</span>Transactions</button>
+    <div class="nav-divider"></div>
+    <a class="nav-btn" href="dashboard.html"><span class="icon">🏠</span>User Dashboard</a>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebarInitials">A</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name" id="sidebarName">Admin</div>
+      <div class="sidebar-user-role">Administrator</div>
+    </div>
+  </div>
+</nav>
+
+<!-- Main -->
+<div id="main">
+  <!-- Topbar -->
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="hamburger" id="hamburger">☰</button>
+      <h1 id="pageTitle">Dashboard</h1>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-secondary" id="refreshBtn">↺ Refresh</button>
+      <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div id="content">
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-content active" id="tab-overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👤</div>
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value" id="statUsers"><span class="spinner"></span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-label">Pending KYC Files</div>
+          <div class="stat-value" id="statPending"><span class="spinner"></span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-label">Submitted KYC</div>
+          <div class="stat-value" id="statSubmitted"><span class="spinner"></span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💳</div>
+          <div class="stat-label">Transactions</div>
+          <div class="stat-value" id="statTx"><span class="spinner"></span></div>
+        </div>
       </div>
-    </header>
 
-    <section class="section-heading compact">
-      <div class="eyebrow">Admin console</div>
-      <h1>User and KYC review</h1>
-      <p class="lead small">Review uploaded KYC files, inspect user accounts, and monitor platform activity totals.</p>
-    </section>
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>KYC Queue <span class="badge badge-pending" id="queueCount"></span></h2>
+          </div>
+          <div id="kycQueue" class="panel-body">
+            <div class="empty-state"><span class="spinner"></span></div>
+          </div>
+        </div>
 
-    <section class="cards-3 section" id="adminStatsGrid">
-      <div class="summary-card glass"><span class="muted">Users</span><strong id="adminUsersCount">0</strong></div>
-      <div class="summary-card glass"><span class="muted">Pending files</span><strong id="adminPendingCount">0</strong></div>
-      <div class="summary-card glass"><span class="muted">Transactions</span><strong id="adminTxCount">0</strong></div>
-    </section>
-
-    <div class="page-grid admin-layout">
-      <section class="panel glass">
-        <div class="panel-head"><h2>KYC review queue</h2><span class="pill alert">Admin only</span></div>
-        <div id="adminKycQueue" class="file-list"></div>
-      </section>
-
-      <aside class="panel glass">
-        <div class="panel-head"><h2>Recent users</h2></div>
-        <div id="adminRecentUsers" class="file-list"></div>
-      </aside>
+        <div class="panel">
+          <div class="panel-head"><h2>Recent Signups</h2></div>
+          <div id="recentUsers" class="panel-body">
+            <div class="empty-state"><span class="spinner"></span></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <section class="panel glass section">
-      <div class="panel-head"><h2>All users</h2></div>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>KYC</th><th>Wallet</th><th>Created</th></tr></thead>
-          <tbody id="adminUsersTableBody"></tbody>
-        </table>
+    <!-- USERS TAB -->
+    <div class="tab-content" id="tab-users">
+      <div class="panel">
+        <div class="panel-head"><h2>All Users</h2><span id="userCount" class="badge badge-user"></span></div>
+        <div class="search-bar">
+          <input type="text" id="userSearch" placeholder="Search by name or email…" />
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>KYC Status</th>
+                <th>Wallet</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="6"><div class="empty-state"><span class="spinner"></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </section>
-  <script src="assets/js/app.js"></script>
+    </div>
+
+    <!-- KYC REVIEW TAB -->
+    <div class="tab-content" id="tab-kyc">
+      <div class="panel">
+        <div class="panel-head"><h2>KYC File Review</h2></div>
+        <div class="filter-tabs" id="kycFilters">
+          <button class="filter-tab active" data-filter="uploaded">Pending</button>
+          <button class="filter-tab" data-filter="approved">Approved</button>
+          <button class="filter-tab" data-filter="rejected">Rejected</button>
+          <button class="filter-tab" data-filter="">All</button>
+        </div>
+        <div id="kycFiles" class="panel-body">
+          <div class="empty-state"><span class="spinner"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSACTIONS TAB -->
+    <div class="tab-content" id="tab-transactions">
+      <div class="panel">
+        <div class="panel-head"><h2>All Transactions</h2></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>User</th><th>Type</th><th>Asset</th><th>Amount</th><th>Value</th><th>Status</th><th>Date</th></tr>
+            </thead>
+            <tbody id="txBody">
+              <tr><td colspan="7"><div class="empty-state"><span class="spinner"></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<div id="toast"></div>
+
+<script src="assets/js/app.js"></script>
+<script>
+(() => {
+  /* ── Auth guard ── */
+  const { apiFetch, requireAuth, logout, showToast } = window.CFM;
+  const me = requireAuth();
+  if (!me) return;
+  if (me.role !== 'admin') { window.location.href = 'dashboard.html'; return; }
+
+  /* ── Sidebar user chip ── */
+  const initials = (me.firstName?.[0] || '') + (me.lastName?.[0] || '');
+  document.getElementById('sidebarInitials').textContent = initials || 'A';
+  document.getElementById('sidebarName').textContent = `${me.firstName} ${me.lastName}`;
+
+  /* ── Hamburger ── */
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  document.getElementById('hamburger').onclick = () => {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  };
+  overlay.onclick = () => { sidebar.classList.remove('open'); overlay.classList.remove('show'); };
+
+  /* ── Logout ── */
+  document.getElementById('logoutBtn').onclick = () => logout();
+
+  /* ── XSS escape ── */
+  const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  /* ── Format date ── */
+  const fmtDate = iso => {
+    if (!iso) return '—';
+    try { return new Date(iso).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}); }
+    catch { return iso.slice(0,10); }
+  };
+
+  /* ── KYC badge ── */
+  const kycBadge = s => `<span class="badge badge-${esc(s)}">${esc(s||'draft')}</span>`;
+
+  /* ── Toast wrapper ── */
+  const toast = (msg, ok = true) => showToast(msg, ok ? 'success' : 'error');
+
+  /* ── Tab routing ── */
+  const tabs = document.querySelectorAll('[data-tab]');
+  const contents = document.querySelectorAll('.tab-content');
+  const titles = { overview: 'Dashboard', users: 'Users', kyc: 'KYC Review', transactions: 'Transactions' };
+  const loaded = {};
+
+  function switchTab(name) {
+    tabs.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+    contents.forEach(c => c.classList.toggle('active', c.id === `tab-${name}`));
+    document.getElementById('pageTitle').textContent = titles[name] || name;
+    if (!loaded[name]) { loaded[name] = true; loaders[name](); }
+  }
+
+  tabs.forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+  document.getElementById('refreshBtn').onclick = () => {
+    const active = document.querySelector('[data-tab].active')?.dataset.tab || 'overview';
+    loaded[active] = false;
+    switchTab(active);
+  };
+
+  /* ═══════════════════════════════════════════
+     OVERVIEW
+  ═══════════════════════════════════════════ */
+  async function loadOverview() {
+    try {
+      const { stats, recentUsers, pendingFiles } = await apiFetch('/api/admin/overview');
+
+      /* stats */
+      document.getElementById('statUsers').textContent    = stats.users ?? 0;
+      document.getElementById('statPending').textContent  = stats.pendingFiles ?? 0;
+      document.getElementById('statSubmitted').textContent= stats.submittedKyc ?? 0;
+      document.getElementById('statTx').textContent       = stats.transactions ?? 0;
+
+      /* KYC queue */
+      const qEl = document.getElementById('kycQueue');
+      const qc   = document.getElementById('queueCount');
+      qc.textContent = pendingFiles.length || '';
+      if (!pendingFiles.length) {
+        qEl.innerHTML = '<div class="empty-state">✅ No pending KYC files</div>';
+      } else {
+        qEl.innerHTML = pendingFiles.map(f => `
+          <div class="file-row">
+            <div class="file-meta">
+              <div class="file-name">${esc(f.document_type || f.original_name)}</div>
+              <div class="file-sub">${esc(f.first_name)} ${esc(f.last_name)} · ${esc(f.email)} · ${fmtDate(f.created_at)}</div>
+            </div>
+            <div class="file-actions">
+              <button class="btn btn-success btn-sm" onclick="doReview(${f.id},'approved')">✓ Approve</button>
+              <button class="btn btn-danger btn-sm" onclick="doReview(${f.id},'rejected')">✕ Reject</button>
+            </div>
+          </div>`).join('');
+      }
+
+      /* Recent users */
+      const rEl = document.getElementById('recentUsers');
+      if (!recentUsers.length) {
+        rEl.innerHTML = '<div class="empty-state">No users yet</div>';
+      } else {
+        rEl.innerHTML = recentUsers.map(u => `
+          <div class="file-row">
+            <div class="user-chip">
+              <div class="chip-avatar">${esc((u.first_name?.[0]||'')+(u.last_name?.[0]||''))}</div>
+              <div>
+                <div class="file-name">${esc(u.first_name)} ${esc(u.last_name)}</div>
+                <div class="file-sub">${esc(u.email)}</div>
+              </div>
+            </div>
+            <span class="badge badge-${esc(u.role)}">${esc(u.role)}</span>
+          </div>`).join('');
+      }
+    } catch (e) {
+      document.getElementById('kycQueue').innerHTML  = `<div class="empty-state" style="color:#f87171">Error: ${esc(e.message)}</div>`;
+      document.getElementById('recentUsers').innerHTML = '';
+      ['statUsers','statPending','statSubmitted','statTx'].forEach(id => document.getElementById(id).textContent = 'Err');
+    }
+  }
+
+  /* ═══════════════════════════════════════════
+     USERS
+  ═══════════════════════════════════════════ */
+  let allUsers = [];
+
+  async function loadUsers() {
+    const tbody = document.getElementById('usersBody');
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><span class="spinner"></span></div></td></tr>';
+    try {
+      const { users } = await apiFetch('/api/admin/users');
+      allUsers = users || [];
+      document.getElementById('userCount').textContent = allUsers.length;
+      renderUsers(allUsers);
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state" style="color:#f87171">Error: ${esc(e.message)}</div></td></tr>`;
+    }
+  }
+
+  function renderUsers(list) {
+    const tbody = document.getElementById('usersBody');
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No users found</div></td></tr>'; return; }
+    tbody.innerHTML = list.map(u => `
+      <tr>
+        <td>
+          <div class="user-chip">
+            <div class="chip-avatar">${esc((u.first_name?.[0]||'')+(u.last_name?.[0]||''))}</div>
+            <span>${esc(u.first_name)} ${esc(u.last_name)}</span>
+          </div>
+        </td>
+        <td style="color:var(--muted)">${esc(u.email)}</td>
+        <td><span class="badge badge-${esc(u.role)}">${esc(u.role)}</span></td>
+        <td>${kycBadge(u.kyc_status)}</td>
+        <td style="font-size:11px;color:var(--muted);font-family:monospace">${u.wallet_address ? esc(u.wallet_address.slice(0,14))+'…' : '—'}</td>
+        <td style="color:var(--muted);font-size:12px">${fmtDate(u.created_at)}</td>
+      </tr>`).join('');
+  }
+
+  document.getElementById('userSearch').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    renderUsers(allUsers.filter(u =>
+      `${u.first_name} ${u.last_name} ${u.email}`.toLowerCase().includes(q)
+    ));
+  });
+
+  /* ═══════════════════════════════════════════
+     KYC REVIEW
+  ═══════════════════════════════════════════ */
+  let allFiles = [], kycFilter = 'uploaded';
+
+  async function loadKyc() {
+    const el = document.getElementById('kycFiles');
+    el.innerHTML = '<div class="empty-state"><span class="spinner"></span></div>';
+    try {
+      const { files } = await apiFetch('/api/admin/kyc/files');
+      allFiles = files || [];
+      renderKyc();
+    } catch (e) {
+      el.innerHTML = `<div class="empty-state" style="color:#f87171">Error: ${esc(e.message)}</div>`;
+    }
+  }
+
+  function renderKyc() {
+    const el = document.getElementById('kycFiles');
+    const list = kycFilter ? allFiles.filter(f => f.status === kycFilter) : allFiles;
+    if (!list.length) { el.innerHTML = '<div class="empty-state">No files in this category</div>'; return; }
+    el.innerHTML = list.map(f => `
+      <div class="file-row" id="kf-${f.id}">
+        <div class="file-meta">
+          <div class="file-name">${esc(f.documentType || f.originalName)}</div>
+          <div class="file-sub">${esc(f.userName)} · ${esc(f.userEmail)}</div>
+          <div class="file-sub" style="margin-top:2px">Uploaded: ${fmtDate(f.createdAt)} &nbsp;·&nbsp; ${kycBadge(f.status)}</div>
+          ${f.reviewerNote ? `<div class="file-sub" style="margin-top:4px;color:#fbbf24">Note: ${esc(f.reviewerNote)}</div>` : ''}
+        </div>
+        <div class="file-actions">
+          <a class="btn btn-ghost btn-sm" href="${esc(f.downloadUrl)}" target="_blank">⬇ View</a>
+          ${f.status !== 'approved' ? `<button class="btn btn-success btn-sm" onclick="doReview(${f.id},'approved')">✓ Approve</button>` : ''}
+          ${f.status !== 'rejected' ? `<button class="btn btn-danger btn-sm" onclick="doReview(${f.id},'rejected')">✕ Reject</button>` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  document.getElementById('kycFilters').querySelectorAll('.filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      kycFilter = btn.dataset.filter;
+      renderKyc();
+    });
+  });
+
+  /* ═══════════════════════════════════════════
+     TRANSACTIONS
+  ═══════════════════════════════════════════ */
+  async function loadTransactions() {
+    const tbody = document.getElementById('txBody');
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><span class="spinner"></span></div></td></tr>';
+    try {
+      /* Fetch all users then get their transactions */
+      const { users } = await apiFetch('/api/admin/users');
+      /* We use the admin/overview pendingFiles as a proxy but actually
+         we need per-user transactions — use overview stats to show total */
+      const { stats } = await apiFetch('/api/admin/overview');
+      /* For a full list we iterate users (limited to 20 for perf) */
+      const rows = [];
+      for (const u of (users || []).slice(0, 20)) {
+        try {
+          const data = await apiFetch(`/api/transactions`);
+          /* Note: /api/transactions returns current user's only — we show what we can */
+          break; /* only current user data available without per-user admin endpoint */
+        } catch {}
+      }
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+        Total platform transactions: <strong>${stats.transactions}</strong><br>
+        <span style="font-size:12px;color:var(--muted);margin-top:6px;display:block">Per-user transaction detail available in a future update.</span>
+      </div></td></tr>`;
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state" style="color:#f87171">Error: ${esc(e.message)}</div></td></tr>`;
+    }
+  }
+
+  /* ═══════════════════════════════════════════
+     doReview — global so inline onclick works
+  ═══════════════════════════════════════════ */
+  window.doReview = async function(fileId, status) {
+    const note = status === 'rejected' ? (prompt('Rejection note (optional):') || '') : '';
+    try {
+      await apiFetch(`/api/admin/kyc/files/${fileId}/review`, {
+        method: 'POST',
+        body: JSON.stringify({ status, reviewerNote: note }),
+      });
+      toast(`File ${status}`, true);
+      /* refresh both overview queue and kyc tab */
+      loaded.overview = false;
+      loaded.kyc = false;
+      const active = document.querySelector('[data-tab].active')?.dataset.tab || 'overview';
+      if (active === 'overview') loadOverview();
+      else if (active === 'kyc') loadKyc();
+    } catch (e) {
+      toast(e.message, false);
+    }
+  };
+
+  /* ── Loaders map ── */
+  const loaders = { overview: loadOverview, users: loadUsers, kyc: loadKyc, transactions: loadTransactions };
+
+  /* ── Boot ── */
+  loadOverview();
+})();
+</script>
 </body>
 </html>

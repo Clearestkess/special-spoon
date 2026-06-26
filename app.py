@@ -31,6 +31,7 @@ MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "16"))
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@blockharbor.local")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "Admin123!")
 APP_ENV = os.getenv("APP_ENV", "development")
+SETUP_TOKEN = os.getenv("SETUP_TOKEN", "")
 
 if DB_BACKEND == "postgres":
     from psycopg import connect as pg_connect
@@ -239,10 +240,9 @@ def adapt_sql(sql: str) -> str:
 
 def connect_db():
     if DB_BACKEND == "postgres":
-        return pg_connect(
-            DATABASE_URL,
-            row_factory=dict_row
-        )
+        conn = pg_connect(DATABASE_URL, row_factory=dict_row)
+        conn.autocommit = False
+        return conn
 
     conn = sqlite3.connect(SQLITE_PATH)
     conn.row_factory = sqlite3.Row
@@ -292,7 +292,7 @@ def ensure_column(conn, table: str, column_name: str, definition: str) -> None:
     if DB_BACKEND == "sqlite":
         existing = {row["name"] for row in query_all(f"PRAGMA table_info({table})", conn=conn)}
         if column_name not in existing:
-            conn.execute(f"ALTER TABLE {table} ADD COLUMN {definition}")
+            execute(f"ALTER TABLE {table} ADD COLUMN {definition}", conn=conn)
         return
 
     existing = {
@@ -304,7 +304,7 @@ def ensure_column(conn, table: str, column_name: str, definition: str) -> None:
         )
     }
     if column_name not in existing:
-        conn.execute(f"ALTER TABLE {table} ADD COLUMN {definition}")
+        execute(f"ALTER TABLE {table} ADD COLUMN {definition}", conn=conn)
 
 
 def init_db() -> None:
@@ -315,6 +315,7 @@ def init_db() -> None:
     else:
         for statement in POSTGRES_SCHEMA:
             execute(statement, conn=conn)
+        commit(conn)
 
     ensure_column(conn, "users", "role", "role TEXT NOT NULL DEFAULT 'user'")
     ensure_column(conn, "kyc", "status", "status TEXT NOT NULL DEFAULT 'draft'")
@@ -899,6 +900,41 @@ def admin_review_kyc_file(file_id: int):
     record_transaction(row["user_id"], "KYC Review", row["document_type"], row["original_name"], note or "Reviewed", status.title())
     sync_kyc_status(row["user_id"])
     return jsonify({"ok": True})
+
+
+@app.post("/api/setup/admin")
+def setup_admin():
+    """One-time admin creation endpoint. Requires SETUP_TOKEN env var."""
+    if not SETUP_TOKEN:
+        return jsonify({"error": "Setup endpoint disabled. Set SETUP_TOKEN env var to enable."}), 403
+    provided = (request.headers.get("X-Setup-Token") or "").strip()
+    if not provided or provided != SETUP_TOKEN:
+        return jsonify({"error": "Invalid or missing X-Setup-Token header"}), 403
+
+    payload = request.get_json(silent=True) or {}
+    email = (payload.get("email") or "").strip().lower()
+    password = (payload.get("password") or "").strip()
+    first = (payload.get("first_name") or "Admin").strip()
+    last = (payload.get("last_name") or "User").strip()
+
+    if not email or not password:
+        return jsonify({"error": "email and password are required"}), 400
+
+    existing = query_one("SELECT id, role FROM users WHERE email = ?", (email,))
+    if existing:
+        execute("UPDATE users SET role = 'admin', password_hash = ? WHERE id = ?",
+                (generate_password_hash(password), existing["id"]))
+        commit()
+        return jsonify({"ok": True, "action": "updated", "id": existing["id"], "email": email})
+
+    execute(
+        "INSERT INTO users (first_name, last_name, email, password_hash, country, phone, created_at, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        (first, last, email, generate_password_hash(password), "Internal", "", iso_now(), "admin"),
+    )
+    commit()
+    new_user = query_one("SELECT id FROM users WHERE email = ?", (email,))
+    ensure_user_bootstrap(new_user["id"])
+    return jsonify({"ok": True, "action": "created", "id": new_user["id"], "email": email})
 
 
 @app.get("/debug")
